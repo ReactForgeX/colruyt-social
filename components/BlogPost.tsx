@@ -84,16 +84,19 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 16,
     marginBottom: 2,
+    fontWeight: "600",
+    color: "#000000",
   },
   timestamp: {
     fontSize: 12,
-    color: "#666",
+    color: "#666666",
   },
   content: {
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 12,
     paddingHorizontal: 16,
+    color: "#333333",
   },
   imageContainer: {
     marginTop: 8,

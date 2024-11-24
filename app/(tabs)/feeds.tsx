@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   StyleSheet,
   View,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
   RefreshControl,
 } from "react-native";
@@ -12,9 +12,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { SocialPost } from "@/components/SocialPost";
+import SocialPost from "@/components/SocialPost";
 import { Images } from "@/constants/Images";
 import { Videos } from "@/constants/Videos";
+import GradientHeader from "@/components/GradientHeader";
 
 type MediaItem = {
   type: "image" | "video";
@@ -97,7 +98,6 @@ const initialPosts: Post[] = [
     avatarKey: "user5",
     content:
       " Meet the amazing people behind Colruyt Group! Our team is dedicated to providing the best service to our customers.",
-    media: [{ type: "image", key: "team" }],
     likes: 201,
     comments: 31,
     timestamp: "1d ago",
@@ -123,38 +123,29 @@ export default function HomeScreen() {
     );
   };
 
+  const renderPost = ({ item }: { item: Post }) => (
+    <SocialPost
+      {...item}
+      onDelete={() => handleDeletePost(item.id)}
+      allowDelete={true}
+    />
+  );
+
   return (
     <View style={styles.container}>
       <SafeAreaView edges={["top"]} style={styles.safeArea}>
-        <ThemedView style={styles.header}>
-          <View style={styles.headerContent}>
-            <ThemedText style={styles.headerTitle}>Colruyt Social</ThemedText>
-            <TouchableOpacity
-              style={styles.profileButton}
-              onPress={() => router.push("/(profile)")}
-            >
-              <MaterialIcons name="account-circle" size={32} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </ThemedView>
-
-        <ScrollView
+        <GradientHeader title="Colruyt Social" />
+        <FlatList
+          data={posts}
+          renderItem={renderPost}
+          keyExtractor={(item) => item.id}
           style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          contentContainerStyle={styles.scrollContent}
-        >
-          {posts.map((post) => (
-            <SocialPost
-              key={post.id}
-              {...post}
-              onDelete={() => handleDeletePost(post.id)}
-              allowDelete={true}
-            />
-          ))}
-        </ScrollView>
+        />
       </SafeAreaView>
     </View>
   );
@@ -163,36 +154,15 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
   },
   safeArea: {
     flex: 1,
-    backgroundColor: "#00ab9e",
-  },
-  header: {
-    height: 56,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
-    justifyContent: "center",
-    backgroundColor: "#00ab9e",
-  },
-  headerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  profileButton: {
-    padding: 8,
+    backgroundColor: "#001824",
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#ddd",
   },
   scrollContent: {
     paddingBottom: 16,

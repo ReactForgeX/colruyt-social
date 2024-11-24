@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   FlatList,
-  Image,
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,7 +10,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Images } from "@/constants/Images";
+import GradientHeader from "@/components/GradientHeader";
 
 // Sample data for events - in a real app, this would come from an API
 const eventsData = [
@@ -21,11 +20,8 @@ const eventsData = [
     date: "2024-02-15",
     time: "14:00 - 16:00",
     location: "Colruyt Headquarters, Brussels",
-    description:
-      "Join us for an interactive workshop on sustainable practices in retail. Learn about our environmental initiatives and how you can contribute.",
-    imageKey: "team",
-    attendees: 45,
     category: "Workshop",
+    attendees: 45,
   },
   {
     id: "2",
@@ -33,11 +29,8 @@ const eventsData = [
     date: "2024-02-20",
     time: "10:00 - 18:00",
     location: "Colruyt Store, Ghent",
-    description:
-      "A special market day featuring local producers and sustainable products. Meet our partners and discover new eco-friendly products.",
-    imageKey: "team",
-    attendees: 120,
     category: "Market",
+    attendees: 120,
   },
   {
     id: "3",
@@ -45,11 +38,8 @@ const eventsData = [
     date: "2024-02-25",
     time: "15:30 - 17:30",
     location: "Virtual Event",
-    description:
-      "Explore the future of retail technology with our tech leaders. Learn about upcoming digital initiatives and innovation projects.",
-    imageKey: "team",
-    attendees: 89,
     category: "Tech Talk",
+    attendees: 89,
   },
   {
     id: "4",
@@ -57,11 +47,8 @@ const eventsData = [
     date: "2024-03-01",
     time: "09:00 - 17:00",
     location: "Colruyt Sports Center",
-    description:
-      "A fun-filled day of team activities, games, and bonding. All departments welcome!",
-    imageKey: "team",
-    attendees: 75,
     category: "Team Event",
+    attendees: 75,
   },
   {
     id: "5",
@@ -69,11 +56,8 @@ const eventsData = [
     date: "2024-03-05",
     time: "13:00 - 16:00",
     location: "Training Center, Antwerp",
-    description:
-      "Learn about the latest customer service best practices and share your experiences with colleagues.",
-    imageKey: "team",
-    attendees: 35,
     category: "Workshop",
+    attendees: 35,
   },
 ];
 
@@ -82,11 +66,8 @@ interface EventCardProps {
   date: string;
   time: string;
   location: string;
-  description: string;
-  imageKey: keyof typeof Images;
-  attendees: number;
   category: string;
-  onPress?: () => void;
+  attendees: number;
 }
 
 function EventCard({
@@ -94,198 +75,171 @@ function EventCard({
   date,
   time,
   location,
-  description,
-  imageKey,
-  attendees,
   category,
-  onPress,
+  attendees,
 }: EventCardProps) {
+  const [isInterested, setIsInterested] = React.useState(false);
   const formattedDate = new Date(date).toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
 
+  const handleInterestPress = () => {
+    setIsInterested(!isInterested);
+  };
+
   return (
-    <TouchableOpacity onPress={onPress}>
+    <View style={styles.cardContainer}>
       <ThemedView style={styles.card}>
-        <Image source={Images[imageKey]} style={styles.eventImage} />
-        <View style={styles.categoryBadge}>
-          <ThemedText style={styles.categoryText}>{category}</ThemedText>
+        <View style={styles.cardHeader}>
+          <View>
+            <ThemedText style={styles.title}>{title}</ThemedText>
+          </View>
         </View>
+
         <View style={styles.cardContent}>
-          <ThemedText style={styles.title}>{title}</ThemedText>
           <View style={styles.infoRow}>
-            <MaterialIcons name="event" size={16} color="#666" />
-            <ThemedText style={styles.infoText}>{formattedDate}</ThemedText>
+            <MaterialIcons name="event" size={16} color="#666666" />
+            <ThemedText style={styles.infoText}>{formattedDate} • {time}</ThemedText>
           </View>
           <View style={styles.infoRow}>
-            <MaterialIcons name="access-time" size={16} color="#666" />
-            <ThemedText style={styles.infoText}>{time}</ThemedText>
-          </View>
-          <View style={styles.infoRow}>
-            <MaterialIcons name="location-on" size={16} color="#666" />
+            <MaterialIcons name="location-on" size={16} color="#666666" />
             <ThemedText style={styles.infoText}>{location}</ThemedText>
           </View>
-          <ThemedText style={styles.description} numberOfLines={2}>
-            {description}
-          </ThemedText>
-          <View style={styles.footer}>
-            <View style={styles.attendees}>
-              <MaterialIcons name="people" size={16} color="#666" />
-              <ThemedText style={styles.attendeesText}>
-                {attendees} attending
-              </ThemedText>
-            </View>
-            <TouchableOpacity style={styles.joinButton}>
-              <ThemedText style={styles.joinButtonText}>Join Event</ThemedText>
-            </TouchableOpacity>
-          </View>
+        </View>
+
+        <View style={[styles.infoRow, styles.interestRow]}>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity 
+            style={[styles.interestButton, isInterested && styles.interestedButton]} 
+            onPress={handleInterestPress}
+          >
+            <MaterialIcons 
+              name={isInterested ? "favorite" : "favorite-outline"} 
+              size={16} 
+              color={isInterested ? "#00ab9e" : "#666666"} 
+            />
+            <ThemedText style={[
+              styles.interestButtonText,
+              isInterested && styles.interestedButtonText
+            ]}>
+              {attendees} interested
+            </ThemedText>
+          </TouchableOpacity>
         </View>
       </ThemedView>
-    </TouchableOpacity>
+    </View>
   );
 }
 
 export default function EventsScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
-        <ThemedView style={styles.header}>
-          <ThemedText style={styles.headerTitle}>Events</ThemedText>
-        </ThemedView>
-        <FlatList
-          data={eventsData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <EventCard
-              title={item.title}
-              date={item.date}
-              time={item.time}
-              location={item.location}
-              description={item.description}
-              imageKey={item.imageKey}
-              attendees={item.attendees}
-              category={item.category}
-            />
-          )}
-          contentContainerStyle={styles.list}
-        />
-      </SafeAreaView>
-    </ThemedView>
+    <SafeAreaView edges={["top"]} style={styles.container}>
+      <GradientHeader title="Events" />
+      <FlatList
+        data={eventsData}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollView}
+        renderItem={({ item }) => (
+          <EventCard
+            title={item.title}
+            date={item.date}
+            time={item.time}
+            location={item.location}
+            category={item.category}
+            attendees={item.attendees}
+          />
+        )}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#001824",
   },
-  safeArea: {
+  scrollView: {
     flex: 1,
-    backgroundColor: "#00ab9e",
+    backgroundColor: "#ffffff",
   },
-  header: {
-    height: 56,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
-    justifyContent: "center",
-    backgroundColor: "#00ab9e",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  list: {
+  scrollContent: {
     padding: 16,
-    backgroundColor: "#f5f5f5",
+    paddingRight: 0,
   },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    overflow: "hidden",
+  cardContainer: {
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "rgba(0, 0, 0, 0.1)",
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 2,
+    elevation: 2,
+    marginRight: 0,
   },
-  eventImage: {
-    width: "100%",
-    height: 160,
-    resizeMode: "cover",
-  },
-  categoryBadge: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-    backgroundColor: "rgba(0, 171, 158, 0.9)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  categoryText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  cardContent: {
+  card: {
+    backgroundColor: "#ffffff",
+    borderWidth: 1,
+    borderRightWidth: 0,
+    borderColor: "#e5e5e5",
     padding: 16,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+    overflow: 'hidden',
+  },
+  cardHeader: {
+    marginBottom: 8,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
-    color: "#11181C",
-    marginBottom: 8,
+    color: "#000000",
+    marginBottom: 4,
+  },
+  cardContent: {
+    gap: 8,
+    marginBottom: 16,
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 6,
+    gap: 8,
+  },
+  interestRow: {
+    marginTop: 'auto',
+    marginRight: -16,
+    marginBottom: -16,
   },
   infoText: {
-    marginLeft: 8,
     fontSize: 14,
-    color: "#687076",
+    color: "#666666",
+    flex: 1,
   },
-  description: {
-    fontSize: 14,
-    color: "#687076",
-    marginVertical: 12,
-    lineHeight: 20,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 8,
-  },
-  attendees: {
+  interestButton: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 8,
+    paddingVertical: 6,
+    paddingLeft: 12,
+    paddingRight: 24,
+    borderTopLeftRadius: 20,
+    backgroundColor: "#f5f5f5",
   },
-  attendeesText: {
-    marginLeft: 8,
+  interestedButton: {
+    backgroundColor: "#e6f7f6",
+  },
+  interestButtonText: {
     fontSize: 14,
-    color: "#687076",
+    color: "#666666",
   },
-  joinButton: {
-    backgroundColor: "#00ab9e",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  joinButtonText: {
-    color: "white",
-    fontWeight: "600",
-    fontSize: 14,
+  interestedButtonText: {
+    color: "#00ab9e",
   },
 });

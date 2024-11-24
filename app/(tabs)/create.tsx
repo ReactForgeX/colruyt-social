@@ -15,6 +15,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Video, ResizeMode } from "expo-av";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { enhanceText } from "@/utils/openai";
+import CreatePostHeader from "@/components/CreatePostHeader";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -101,151 +102,95 @@ export default function CreatePostScreen() {
   );
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
-        <ThemedView style={styles.header}>
-          <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => router.back()}>
-              <ThemedText style={styles.cancelButton}>Cancel</ThemedText>
-            </TouchableOpacity>
-            <ThemedText style={styles.headerTitle}>Create Post</ThemedText>
-            <TouchableOpacity
-              onPress={handleSubmit}
-              disabled={!content.trim()}
-              style={[
-                styles.postButton,
-                !content.trim() && styles.postButtonDisabled,
-              ]}
-            >
-              <ThemedText style={styles.postButtonText}>Post</ThemedText>
-            </TouchableOpacity>
-          </View>
-        </ThemedView>
-
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.content}
-        >
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              multiline
-              placeholder="What's on your mind?"
-              placeholderTextColor="#666"
-              value={content}
-              onChangeText={setContent}
-              autoFocus
-            />
-            <TouchableOpacity
-              style={[
-                styles.magicButton,
-                !content.trim() && styles.magicButtonDisabled,
-              ]}
-              onPress={handleMagicText}
-              disabled={!content.trim() || isEnhancing}
-            >
-              {isEnhancing ? (
-                <ActivityIndicator color="#00ab9e" size="small" />
-              ) : (
-                <>
-                  <IconSymbol
-                    name="wand.and.stars"
-                    size={20}
-                    color={content.trim() ? "#00ab9e" : "#999"}
-                  />
-                  <ThemedText
-                    style={[
-                      styles.magicButtonText,
-                      !content.trim() && styles.magicButtonTextDisabled,
-                    ]}
-                  >
-                    Magic Text
-                  </ThemedText>
-                </>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          {media && (
-            <View style={styles.mediaPreview}>
-              <TouchableOpacity
-                style={styles.removeButton}
-                onPress={removeMedia}
-              >
-                <IconSymbol name="xmark.circle.fill" size={24} color="#fff" />
-              </TouchableOpacity>
-              {media.type === "image" ? (
-                <Image
-                  source={{ uri: media.uri }}
-                  style={styles.mediaContent}
+    <SafeAreaView edges={["top"]} style={styles.container}>
+      <CreatePostHeader
+        onCancel={() => router.back()}
+        onPost={handleSubmit}
+        isPostDisabled={!content.trim()}
+      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardView}
+      >
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            multiline
+            placeholder="What's on your mind?"
+            placeholderTextColor="#666"
+            value={content}
+            onChangeText={setContent}
+            autoFocus
+          />
+          <TouchableOpacity
+            style={[
+              styles.magicButton,
+              !content.trim() && styles.magicButtonDisabled,
+            ]}
+            onPress={handleMagicText}
+            disabled={!content.trim() || isEnhancing}
+          >
+            {isEnhancing ? (
+              <ActivityIndicator color="#00ab9e" size="small" />
+            ) : (
+              <>
+                <IconSymbol
+                  name="wand.and.stars"
+                  size={20}
+                  color={content.trim() ? "#00ab9e" : "#999"}
                 />
-              ) : (
-                <Video
-                  source={{ uri: media.uri }}
-                  style={styles.mediaContent}
-                  useNativeControls
-                  resizeMode={ResizeMode.CONTAIN}
-                  isLooping={false}
-                />
-              )}
-            </View>
-          )}
+                <ThemedText
+                  style={[
+                    styles.magicButtonText,
+                    !content.trim() && styles.magicButtonTextDisabled,
+                  ]}
+                >
+                  Magic Text
+                </ThemedText>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
 
-          {renderMediaButtons()}
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </ThemedView>
+        {media && (
+          <View style={styles.mediaPreview}>
+            <TouchableOpacity
+              style={styles.removeButton}
+              onPress={removeMedia}
+            >
+              <IconSymbol name="xmark.circle.fill" size={24} color="#fff" />
+            </TouchableOpacity>
+            {media.type === "image" ? (
+              <Image
+                source={{ uri: media.uri }}
+                style={styles.mediaContent}
+              />
+            ) : (
+              <Video
+                source={{ uri: media.uri }}
+                style={styles.mediaContent}
+                useNativeControls
+                resizeMode={ResizeMode.CONTAIN}
+                isLooping={false}
+              />
+            )}
+          </View>
+        )}
+
+        {renderMediaButtons()}
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#001824",
   },
-  safeArea: {
+  keyboardView: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  header: {
-    height: 56,
-    backgroundColor: "#00ab9e",
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
-  },
-  headerContent: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  cancelButton: {
-    fontSize: 16,
-    color: "#fff",
-  },
-  postButton: {
-    backgroundColor: "#fff",
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  postButtonDisabled: {
-    opacity: 0.5,
-  },
-  postButtonText: {
-    color: "#00ab9e",
-    fontWeight: "bold",
-  },
-  content: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 16,
+    backgroundColor: "#ffffff",
   },
   inputContainer: {
     backgroundColor: "#fff",

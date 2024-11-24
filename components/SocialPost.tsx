@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Image,
@@ -7,15 +7,17 @@ import {
   Dimensions,
   Modal,
 } from "react-native";
-import { Video, ResizeMode } from "expo-av";
+import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { Avatars } from "@/constants/Avatars";
 import { Images } from "@/constants/Images";
 import { Videos } from "@/constants/Videos";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 interface SocialPostProps {
   username: string;
@@ -32,7 +34,7 @@ interface SocialPostProps {
   onDelete?: () => void;
 }
 
-export function SocialPost({
+const SocialPost = ({
   username,
   avatarKey = "default",
   content,
@@ -42,9 +44,13 @@ export function SocialPost({
   likes,
   comments,
   onDelete,
-}: SocialPostProps) {
+}: SocialPostProps) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isImageFullscreen, setIsImageFullscreen] = useState(false);
+  const colorScheme = useColorScheme();
+  const videoRef = useRef<Video>(null);
 
   const goToNextMedia = () => {
     if (media && currentMediaIndex < media.length - 1) {
@@ -67,10 +73,40 @@ export function SocialPost({
     setShowDeleteConfirm(false);
   };
 
+  const handleVideoPress = async () => {
+    try {
+      if (videoRef.current) {
+        await videoRef.current.presentFullscreenPlayer();
+      }
+    } catch (error) {
+      console.log('Error presenting fullscreen:', error);
+    }
+  };
+
+  const handleFullscreenUpdate = async ({ fullscreenUpdate }: any) => {
+    if (fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT) {
+      setIsFullscreen(true);
+      if (videoRef.current) {
+        await videoRef.current.setIsMutedAsync(false);
+      }
+    } else if (fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS) {
+      setIsFullscreen(false);
+      if (videoRef.current) {
+        await videoRef.current.setIsMutedAsync(true);
+      }
+    }
+  };
+
+  const handleImagePress = () => {
+    setIsImageFullscreen(true);
+  };
+
   const currentMedia = media?.[currentMediaIndex];
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView
+      style={[styles.container, { backgroundColor: '#ffffff' }]}
+    >
       <View style={styles.header}>
         <View style={styles.userInfo}>
           <Image
@@ -100,19 +136,51 @@ export function SocialPost({
       {media && media.length > 0 && (
         <View style={styles.mediaContainer}>
           {currentMedia.type === "image" ? (
-            <Image
-              source={Images[currentMedia.key as keyof typeof Images]}
-              style={styles.media}
-              resizeMode="cover"
-            />
+            <>
+              <TouchableOpacity onPress={handleImagePress}>
+                <Image
+                  source={Images[currentMedia.key as keyof typeof Images]}
+                  style={styles.media}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+              <Modal
+                visible={isImageFullscreen}
+                transparent={true}
+                onRequestClose={() => setIsImageFullscreen(false)}
+              >
+                <View style={styles.fullscreenContainer}>
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setIsImageFullscreen(false)}
+                  >
+                    <MaterialIcons name="close" size={28} color="#fff" />
+                  </TouchableOpacity>
+                  <Image
+                    source={Images[currentMedia.key as keyof typeof Images]}
+                    style={styles.fullscreenImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              </Modal>
+            </>
           ) : (
-            <Video
-              source={Videos[currentMedia.key as keyof typeof Videos]}
-              style={styles.media}
-              resizeMode={ResizeMode.COVER}
-              isLooping
-              shouldPlay
-            />
+            <TouchableOpacity 
+              onPress={handleVideoPress}
+              activeOpacity={0.9}
+            >
+              <Video
+                ref={videoRef}
+                source={Videos[currentMedia.key as keyof typeof Videos]}
+                style={styles.media}
+                resizeMode={isFullscreen ? ResizeMode.CONTAIN : ResizeMode.COVER}
+                isLooping
+                shouldPlay
+                isMuted={true}
+                useNativeControls={isFullscreen}
+                onFullscreenUpdate={handleFullscreenUpdate}
+              />
+            </TouchableOpacity>
           )}
 
           {media.length > 1 && (
@@ -125,7 +193,7 @@ export function SocialPost({
                 onPress={goToPreviousMedia}
                 disabled={currentMediaIndex === 0}
               >
-                <ThemedText style={styles.mediaButtonText}>←</ThemedText>
+                <MaterialIcons name="chevron-left" size={24} color="#333" />
               </TouchableOpacity>
               <ThemedText style={styles.mediaCounter}>
                 {currentMediaIndex + 1}/{media.length}
@@ -138,7 +206,7 @@ export function SocialPost({
                 onPress={goToNextMedia}
                 disabled={currentMediaIndex === media.length - 1}
               >
-                <ThemedText style={styles.mediaButtonText}>→</ThemedText>
+                <MaterialIcons name="chevron-right" size={24} color="#333" />
               </TouchableOpacity>
             </View>
           )}
@@ -185,7 +253,6 @@ export function SocialPost({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
-    borderRadius: 12,
     overflow: "hidden",
   },
   header: {
@@ -202,77 +269,88 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 12,
+    marginRight: 8,
   },
   username: {
     fontSize: 16,
-    marginBottom: 2,
+    fontWeight: "600",
+    color: "#000000",
   },
   timestamp: {
     fontSize: 12,
-    color: "#666",
+    color: "#666666",
+    marginTop: 2,
   },
   menuDots: {
-    fontSize: 24,
-    paddingHorizontal: 8,
+    fontSize: 20,
+    color: "#666666",
+    marginRight: 8,
   },
   content: {
     fontSize: 16,
-    lineHeight: 22,
-    padding: 12,
+    lineHeight: 24,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    color: "#333333",
   },
   mediaContainer: {
-    width: "100%",
-    backgroundColor: "#f1f1f1",
     position: "relative",
-    height: width * 0.75,
   },
   media: {
-    width: "100%",
-    height: "100%",
+    width: width,
+    height: width * 0.75,
+    backgroundColor: '#000',
   },
   mediaControls: {
     position: "absolute",
     bottom: 16,
-    left: 0,
-    right: 0,
+    left: 16,
+    right: 16,
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: "transparent",
   },
   mediaButton: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginHorizontal: 8,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   mediaButtonDisabled: {
-    opacity: 0.5,
-  },
-  mediaButtonText: {
-    color: "white",
-    fontSize: 18,
+    opacity: 0.4,
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
   },
   mediaCounter: {
-    color: "white",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    color: "#FFFFFF",
     fontSize: 14,
+    fontWeight: "600",
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   footer: {
     flexDirection: "row",
     padding: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e5e5",
+    gap: 16,
   },
   footerButton: {
-    marginRight: 20,
+    flexDirection: "row",
+    alignItems: "center",
   },
   footerButtonText: {
-    fontSize: 16,
+    fontSize: 14,
+    color: "#666666",
   },
   modalOverlay: {
     flex: 1,
@@ -282,24 +360,48 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "80%",
-    borderRadius: 12,
-    overflow: "hidden",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 16,
   },
   modalHeader: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e5e5",
+    alignItems: "center",
+    marginBottom: 16,
   },
   modalTitle: {
     fontSize: 18,
-    textAlign: "center",
+    fontWeight: "600",
+    color: "#000000",
   },
   deleteButton: {
-    padding: 16,
+    backgroundColor: "#FF4444",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
   },
   deleteButtonText: {
-    color: "#ff3b30",
+    color: "#FFFFFF",
     fontSize: 16,
-    textAlign: "center",
+    fontWeight: "600",
+  },
+  fullscreenContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenImage: {
+    width: width,
+    height: height,
+    resizeMode: 'contain',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 1,
+    padding: 8,
   },
 });
+
+export default SocialPost;

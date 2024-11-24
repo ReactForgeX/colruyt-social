@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View as RNView,
   FlatList,
   Image,
   TouchableOpacity,
-  Text,
   useWindowDimensions,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { MaterialIcons } from "@expo/vector-icons";
+import { ThemedText } from "@/components/ThemedText";
+import GradientHeader from "@/components/GradientHeader";
 
 // Sample data - in a real app, this would come from an API
 const peopleData = [
@@ -72,13 +74,13 @@ function PersonCard({
         </RNView>
         <RNView style={styles.cardContent}>
           <RNView style={styles.textContainer}>
-            <Text style={styles.name}>{name}</Text>
-            <Text style={styles.role}>{role}</Text>
-            <Text style={styles.department}>{department}</Text>
+            <ThemedText style={styles.name}>{name}</ThemedText>
+            <ThemedText style={styles.role}>{role}</ThemedText>
+            <ThemedText style={styles.department}>{department}</ThemedText>
             <RNView style={styles.statsRow}>
-              <Text style={styles.stats}>{followers} followers</Text>
-              <Text style={styles.statsDot}>·</Text>
-              <Text style={styles.stats}>{following} following</Text>
+              <ThemedText style={styles.stats}>{followers} followers</ThemedText>
+              <ThemedText style={styles.statsDot}>·</ThemedText>
+              <ThemedText style={styles.stats}>{following} following</ThemedText>
             </RNView>
           </RNView>
         </RNView>
@@ -156,73 +158,64 @@ export default function PeopleScreen() {
   );
 
   return (
-    <RNView style={styles.container}>
-      <SafeAreaView edges={["top"]} style={styles.safeArea}>
-        <RNView style={styles.header}>
-          <Text style={styles.headerTitle}>Connections</Text>
-        </RNView>
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width: layout.width }}
-          renderTabBar={renderTabBar}
-          style={styles.tabView}
-        />
-      </SafeAreaView>
-    </RNView>
+    <SafeAreaView edges={["top"]} style={styles.container}>
+      <GradientHeader title="Connections" />
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        renderTabBar={renderTabBar}
+        style={styles.tabView}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-  },
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#00ab9e",
-  },
-  header: {
-    height: 56,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
-    justifyContent: "center",
-    backgroundColor: "#00ab9e",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#fff",
+    backgroundColor: "#001824",
   },
   tabView: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#ffffff",
+  },
+  tabBar: {
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e5e5",
+  },
+  tabLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    textTransform: "none",
+  },
+  indicator: {
+    backgroundColor: "#00ab9e",
   },
   list: {
     padding: 16,
-    backgroundColor: "#f5f5f5",
   },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    backgroundColor: "#ffffff",
+    marginBottom: 16,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "rgba(0, 0, 0, 0.1)",
+    borderColor: "#e5e5e5",
   },
   cardRow: {
     flexDirection: "row",
+    padding: 16,
     alignItems: "center",
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: "#f5f5f5",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
   cardContent: {
     flex: 1,
@@ -234,55 +227,41 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#11181C",
-    marginBottom: 2,
+    color: "#000000",
+    marginBottom: 4,
   },
   role: {
     fontSize: 14,
-    color: "#687076",
+    color: "#333333",
     marginBottom: 2,
   },
   department: {
-    fontSize: 13,
-    color: "#687076",
-    marginBottom: 6,
+    fontSize: 14,
+    color: "#666666",
+    marginBottom: 8,
   },
   statsRow: {
     flexDirection: "row",
     alignItems: "center",
   },
   stats: {
-    fontSize: 12,
-    color: "#687076",
+    fontSize: 14,
+    color: "#666666",
   },
   statsDot: {
-    fontSize: 12,
-    color: "#687076",
+    fontSize: 14,
+    color: "#666666",
     marginHorizontal: 6,
   },
   followButton: {
-    padding: 8,
+    width: 40,
+    height: 40,
     borderRadius: 20,
+    backgroundColor: "#f5f5f5",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
-    marginLeft: 12,
   },
   followingButton: {
-    backgroundColor: "#ebebeb",
-  },
-  tabBar: {
-    backgroundColor: "#fff",
-    elevation: 0,
-    shadowOpacity: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  indicator: {
-    backgroundColor: "#00ab9e",
-  },
-  tabLabel: {
-    textTransform: "none",
-    fontWeight: "600",
+    backgroundColor: "#e5e5e5",
   },
 });

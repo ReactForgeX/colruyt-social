@@ -1,116 +1,134 @@
-import { StyleSheet, ScrollView, TouchableOpacity, View } from "react-native";
-import { useRouter } from "expo-router";
+import React from "react";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { BlogPost } from "@/components/BlogPost";
+import GradientHeader from "@/components/GradientHeader";
 import { Images } from "@/constants/Images";
-import { Videos } from "@/constants/Videos";
 
-type MediaItem = {
-  type: "image" | "video";
-  key: keyof typeof Images | keyof typeof Videos;
+type BlogPost = {
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  datePosted: string;
+  readTime: string;
+  imageKey: keyof typeof Images;
 };
 
-// This would typically come from an API or database
-const blogPosts = [
+const blogPosts: BlogPost[] = [
   {
     id: "1",
-    username: "Colruyt Team",
-    avatarKey: "default",
-    content:
-      "Welcome to our Blog! Here we share insights about sustainability, community initiatives, and the latest updates from Colruyt Group. Stay tuned for regular updates!",
-    imageKey: "team",
-    timestamp: "1d ago",
+    title: "Welcome to Colruyt Social",
+    excerpt: "Discover how our platform brings the Colruyt community together...",
+    category: "Community",
+    datePosted: "May 15, 2024",
+    readTime: "5 min read",
+    imageKey: "image1",
   },
   {
     id: "2",
-    username: "Sustainability Team",
-    avatarKey: "user2",
-    content:
-      "Did you know? Our commitment to sustainability goes beyond just words. We've implemented various eco-friendly initiatives across our stores, including reducing plastic packaging and promoting local produce.",
-    imageKey: "sustainability",
-    timestamp: "2d ago",
+    title: "Sustainability at Colruyt",
+    excerpt: "Learn about our latest initiatives for a greener future...",
+    category: "Sustainability",
+    datePosted: "May 14, 2024",
+    readTime: "4 min read",
+    imageKey: "image2",
   },
-  {
-    id: "3",
-    username: "Community Manager",
-    avatarKey: "user3",
-    content:
-      "At Colruyt Group, we believe in the power of local partnerships. Our commitment to supporting local communities goes beyond just business.",
-    imageKey: "community",
-    timestamp: "3d ago",
-  },
+  // Add more blog posts as needed
 ];
 
 export default function BlogScreen() {
-  const router = useRouter();
-
-  const handlePostPress = (postId: string) => {
-    router.push({
-      pathname: "/(blog)/[id]",
-      params: { id: postId },
-    });
-  };
-
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
-        <ThemedView style={styles.header}>
-          <ThemedText style={styles.headerTitle}>Blog</ThemedText>
-        </ThemedView>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-        >
-          {blogPosts.map((post) => (
-            <TouchableOpacity
-              key={post.id}
-              onPress={() => handlePostPress(post.id)}
-            >
-              <BlogPost
-                username={post.username}
-                avatarKey={post.avatarKey}
-                content={post.content}
-                imageKey={post.imageKey}
-                timestamp={post.timestamp}
-              />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+    <SafeAreaView edges={["top"]} style={styles.container}>
+      <GradientHeader title="Blog" />
+      <ScrollView style={styles.scrollView}>
+        {blogPosts.map((post) => (
+          <View key={post.id} style={styles.card}>
+            <View style={styles.cardContent}>
+              <View style={styles.postMeta}>
+                <ThemedText style={styles.category}>{post.category}</ThemedText>
+                <View style={styles.dot} />
+                <ThemedText style={styles.date}>{post.datePosted}</ThemedText>
+              </View>
+              <ThemedText style={styles.title}>{post.title}</ThemedText>
+              <ThemedText style={styles.excerpt} numberOfLines={2}>
+                {post.excerpt}
+              </ThemedText>
+              <View style={styles.readMoreContainer}>
+                <ThemedText style={styles.readTime}>{post.readTime}</ThemedText>
+                <MaterialIcons name="arrow-forward" size={20} color="#00ab9e" />
+              </View>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-  },
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#00ab9e",
-  },
-  header: {
-    height: 56,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#00ab9e",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#fff",
+    backgroundColor: "#001824",
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#ffffff",
   },
-  scrollContent: {
-    paddingBottom: 16,
+  card: {
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  cardContent: {
+    padding: 16,
+  },
+  postMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  category: {
+    fontSize: 14,
+    color: "#00ab9e",
+    fontWeight: "500",
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#666666",
+    marginHorizontal: 8,
+  },
+  date: {
+    fontSize: 14,
+    color: "#666666",
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#000000",
+    marginBottom: 8,
+  },
+  excerpt: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: "#333333",
+    marginBottom: 12,
+  },
+  readMoreContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  readTime: {
+    fontSize: 14,
+    color: "#666666",
   },
 });
