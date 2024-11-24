@@ -7,13 +7,17 @@ import {
   Text,
   TouchableOpacity,
   SafeAreaView,
+  Pressable,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { Images } from "@/constants/Images";
-import GradientHeader from "@/components/GradientHeader";
+import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
 
   const handleEditImage = () => {
     // Handle image edit functionality
@@ -26,36 +30,66 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GradientHeader title="Profile" showProfileButton={false} />
       <ScrollView style={styles.scrollView}>
         {/* Cover Image and Profile Section */}
         <View style={styles.coverContainer}>
-          <View style={styles.coverBackground} />
-          <View style={styles.profileSection}>
-            <View style={styles.profileImageContainer}>
-              <Image
-                source={Images.user1}
-                style={styles.profileImage}
-                resizeMode="cover"
-              />
-              <TouchableOpacity 
-                style={styles.editImageButton}
-                onPress={handleEditImage}
-              >
-                <MaterialIcons name="photo-camera" size={16} color="#fff" />
-              </TouchableOpacity>
+          <LinearGradient
+            colors={[
+              '#001F2D',
+              '#003D4D',
+              '#00435C',
+              '#007B8C',
+              '#00AB9E',
+            ]}
+            locations={[0, 0.25, 0.5, 0.75, 1]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.coverBackground}
+          >
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.push("/feeds")}
+            >
+              <MaterialIcons name="arrow-back" size={24} color="#001824" />
+            </TouchableOpacity>
+            <View style={styles.profileSection}>
+              <View style={styles.profileImageContainer}>
+                <LinearGradient
+                  colors={['#00AB9E', '#007B8C', '#003D4D']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.imageGradientBorder}
+                >
+                  <View style={styles.imageWrapper}>
+                    <Image
+                      source={Images.user1}
+                      style={styles.profileImage}
+                      resizeMode="cover"
+                    />
+                  </View>
+                </LinearGradient>
+                <Pressable 
+                  style={({ pressed }) => [
+                    styles.editImageButton,
+                    pressed && styles.editImageButtonPressed
+                  ]}
+                  onPress={handleEditImage}
+                >
+                  <MaterialIcons name="photo-camera" size={20} color="#fff" />
+                </Pressable>
+              </View>
+              
+              {/* Profile Info Section */}
+              <View style={styles.infoContainer}>
+                <Text style={styles.name}>John Doe</Text>
+                <Text style={styles.role}>Store Manager</Text>
+                <Text style={styles.location}>
+                  <MaterialIcons name="location-on" size={16} color="#ffffff" />
+                  <Text style={styles.locationText}>{" Brussels, Belgium"}</Text>
+                </Text>
+              </View>
             </View>
-            
-            {/* Profile Info Section */}
-            <View style={styles.infoContainer}>
-              <Text style={styles.name}>John Doe</Text>
-              <Text style={styles.role}>Store Manager</Text>
-              <Text style={styles.location}>
-                <MaterialIcons name="location-on" size={16} color="#ffffff" />
-                <Text style={styles.locationText}>{" Brussels, Belgium"}</Text>
-              </Text>
-            </View>
-          </View>
+          </LinearGradient>
         </View>
 
         {/* Stats Section */}
@@ -143,25 +177,51 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   coverContainer: {
-    height: 200,
+    height: 300,
     position: "relative",
     overflow: "hidden",
     marginTop: 0,
-  },
-  coverBackground: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#20B2AA",  
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    opacity: 0.95,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 10,
     },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 15,
+    elevation: 12,
+  },
+  coverBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 42,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   profileSection: {
     position: 'absolute',
@@ -174,43 +234,62 @@ const styles = StyleSheet.create({
   },
   profileImageContainer: {
     position: "relative",
-    borderRadius: 75,
-    padding: 5,
+    padding: 2,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 6,
     },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 12,
+    elevation: 8,
+  },
+  imageGradientBorder: {
+    borderRadius: 24,
+    padding: 3,
+    transform: [{ rotate: '45deg' }],
+  },
+  imageWrapper: {
+    width: 90,
+    height: 90,
+    borderRadius: 24,
+    transform: [{ rotate: '-45deg' }],
+    overflow: 'hidden',
+    borderWidth: 3,
+    borderColor: "#ffffff",
+    backgroundColor: '#ffffff',
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 4,
-    borderColor: "#ffffff",
+    width: '140%',
+    height: '140%',
+    marginLeft: '-20%',
+    marginTop: '-20%',
   },
   editImageButton: {
     position: 'absolute',
     right: -4,
     bottom: -4,
     backgroundColor: '#00ab9e',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: '#ffffff',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 3,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 3.65,
+    elevation: 6,
+    zIndex: 1,
+  },
+  editImageButtonPressed: {
+    transform: [{ scale: 0.95 }],
+    opacity: 0.9,
   },
   infoContainer: {
     flex: 1,

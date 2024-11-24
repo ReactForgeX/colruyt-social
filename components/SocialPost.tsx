@@ -7,8 +7,8 @@ import {
   Dimensions,
   Modal,
 } from "react-native";
-import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Video } from 'expo-av';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -52,6 +52,8 @@ const SocialPost = ({
   const colorScheme = useColorScheme();
   const videoRef = useRef<Video>(null);
 
+  const currentMedia = media?.[currentMediaIndex];
+
   const goToNextMedia = () => {
     if (media && currentMediaIndex < media.length - 1) {
       setCurrentMediaIndex(currentMediaIndex + 1);
@@ -83,7 +85,7 @@ const SocialPost = ({
     }
   };
 
-  const handleFullscreenUpdate = async ({ fullscreenUpdate }: any) => {
+  const handleFullscreenUpdate = async ({ fullscreenUpdate }: { fullscreenUpdate: number }) => {
     if (fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT) {
       setIsFullscreen(true);
       if (videoRef.current) {
@@ -100,8 +102,6 @@ const SocialPost = ({
   const handleImagePress = () => {
     setIsImageFullscreen(true);
   };
-
-  const currentMedia = media?.[currentMediaIndex];
 
   return (
     <ThemedView
@@ -171,12 +171,12 @@ const SocialPost = ({
             >
               <Video
                 ref={videoRef}
-                source={Videos[currentMedia.key as keyof typeof Videos]}
+                source={currentMedia?.type === 'video' ? Videos[currentMedia.key as keyof typeof Videos] : undefined}
                 style={styles.media}
-                resizeMode={isFullscreen ? ResizeMode.CONTAIN : ResizeMode.COVER}
-                isLooping
+                resizeMode={isFullscreen ? "contain" : "cover"}
                 shouldPlay
-                isMuted={true}
+                isLooping
+                isMuted={!isFullscreen}
                 useNativeControls={isFullscreen}
                 onFullscreenUpdate={handleFullscreenUpdate}
               />
