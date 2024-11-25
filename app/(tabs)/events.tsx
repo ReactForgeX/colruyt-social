@@ -147,7 +147,9 @@ function EventCard({
         <View style={styles.cardContent}>
           <View style={styles.infoRow}>
             <MaterialIcons name="event" size={16} color="#666666" />
-            <ThemedText style={styles.infoText}>{formattedDate} • {time}</ThemedText>
+            <ThemedText style={styles.infoText}>
+              {formattedDate} • {time}
+            </ThemedText>
           </View>
           <View style={styles.infoRow}>
             <MaterialIcons name="location-on" size={16} color="#666666" />
@@ -157,19 +159,24 @@ function EventCard({
 
         <View style={[styles.infoRow, styles.interestRow]}>
           <View style={{ flex: 1 }} />
-          <TouchableOpacity 
-            style={[styles.interestButton, isInterested && styles.interestedButton]} 
+          <TouchableOpacity
+            style={[
+              styles.interestButton,
+              isInterested && styles.interestedButton,
+            ]}
             onPress={handleInterestPress}
           >
-            <MaterialIcons 
-              name={isInterested ? "favorite" : "favorite-outline"} 
-              size={16} 
-              color={isInterested ? "#00ab9e" : "#666666"} 
+            <MaterialIcons
+              name={isInterested ? "favorite" : "favorite-outline"}
+              size={16}
+              color={isInterested ? "#00ab9e" : "#666666"}
             />
-            <ThemedText style={[
-              styles.interestButtonText,
-              isInterested && styles.interestedButtonText
-            ]}>
+            <ThemedText
+              style={[
+                styles.interestButtonText,
+                isInterested && styles.interestedButtonText,
+              ]}
+            >
               {attendees} interested
             </ThemedText>
           </TouchableOpacity>
@@ -256,7 +263,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopLeftRadius: 12,
     borderBottomLeftRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   cardHeader: {
     marginBottom: 8,
@@ -277,7 +284,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   interestRow: {
-    marginTop: 'auto',
+    marginTop: "auto",
     marginRight: -16,
     marginBottom: -16,
   },
