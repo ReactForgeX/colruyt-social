@@ -78,9 +78,13 @@ function PersonCard({
             <ThemedText style={styles.role}>{role}</ThemedText>
             <ThemedText style={styles.department}>{department}</ThemedText>
             <RNView style={styles.statsRow}>
-              <ThemedText style={styles.stats}>{followers} followers</ThemedText>
+              <ThemedText style={styles.stats}>
+                {followers} followers
+              </ThemedText>
               <ThemedText style={styles.statsDot}>·</ThemedText>
-              <ThemedText style={styles.stats}>{following} following</ThemedText>
+              <ThemedText style={styles.stats}>
+                {following} following
+              </ThemedText>
             </RNView>
           </RNView>
         </RNView>
@@ -179,7 +183,7 @@ const styles = StyleSheet.create({
   },
   tabView: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#eee",
   },
   tabBar: {
     backgroundColor: "#ffffff",
