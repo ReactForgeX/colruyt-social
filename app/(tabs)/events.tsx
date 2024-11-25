@@ -2,7 +2,7 @@ import React from "react";
 import {
   StyleSheet,
   View,
-  FlatList,
+  SectionList,
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,13 +12,58 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import GradientHeader from "@/components/GradientHeader";
 
-// Sample data for events - in a real app, this would come from an API
-const eventsData = [
+// Define an Event type
+type Event = {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  category: string;
+  attendees: number;
+};
+
+// Helper function to group events by relative dates
+const groupEventsByDate = (events: Event[]) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+
+  const sections: { title: string; data: Event[] }[] = [
+    { title: "Today", data: [] },
+    { title: "Tomorrow", data: [] },
+    { title: "This Week", data: [] },
+    { title: "Later", data: [] },
+  ];
+
+  events.forEach(event => {
+    const eventDate = new Date(event.date);
+    eventDate.setHours(0, 0, 0, 0);
+
+    if (eventDate.getTime() === today.getTime()) {
+      sections[0].data.push(event);
+    } else if (eventDate.getTime() === tomorrow.getTime()) {
+      sections[1].data.push(event);
+    } else if (eventDate < nextWeek) {
+      sections[2].data.push(event);
+    } else {
+      sections[3].data.push(event);
+    }
+  });
+
+  return sections.filter(section => section.data.length > 0);
+};
+
+// Sample data for events
+const eventsData: Event[] = [
   {
     id: "1",
     title: "Sustainability Workshop",
-    date: "2024-02-15",
-    time: "14:00 - 16:00",
+    date: new Date().toISOString().split('T')[0], // Today
+    time: "09:00 - 17:00",
     location: "Colruyt Headquarters, Brussels",
     category: "Workshop",
     attendees: 45,
@@ -26,7 +71,7 @@ const eventsData = [
   {
     id: "2",
     title: "Community Market Day",
-    date: "2024-02-20",
+    date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
     time: "10:00 - 18:00",
     location: "Colruyt Store, Ghent",
     category: "Market",
@@ -35,7 +80,7 @@ const eventsData = [
   {
     id: "3",
     title: "Digital Innovation Talk",
-    date: "2024-02-25",
+    date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0], // 3 days later
     time: "15:30 - 17:30",
     location: "Virtual Event",
     category: "Tech Talk",
@@ -44,7 +89,7 @@ const eventsData = [
   {
     id: "4",
     title: "Team Building Day",
-    date: "2024-03-01",
+    date: new Date(Date.now() + 86400000 * 10).toISOString().split('T')[0], // 10 days later
     time: "09:00 - 17:00",
     location: "Colruyt Sports Center",
     category: "Team Event",
@@ -53,7 +98,7 @@ const eventsData = [
   {
     id: "5",
     title: "Customer Experience Workshop",
-    date: "2024-03-05",
+    date: new Date(Date.now() + 86400000 * 15).toISOString().split('T')[0], // 15 days later
     time: "13:00 - 16:00",
     location: "Training Center, Antwerp",
     category: "Workshop",
@@ -89,9 +134,10 @@ function EventCard({
     setIsInterested(!isInterested);
   };
 
+
   return (
     <View style={styles.cardContainer}>
-      <ThemedView style={styles.card}>
+      <ThemedView style={[styles.card]}>
         <View style={styles.cardHeader}>
           <View>
             <ThemedText style={styles.title}>{title}</ThemedText>
@@ -134,11 +180,13 @@ function EventCard({
 }
 
 export default function EventsScreen() {
+  const sections = groupEventsByDate(eventsData);
+
   return (
     <SafeAreaView edges={["top"]} style={styles.container}>
-      <GradientHeader title="Events" />
-      <FlatList
-        data={eventsData}
+      <GradientHeader title="Events & Announcements" />
+      <SectionList
+        sections={sections}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollView}
@@ -152,6 +200,11 @@ export default function EventsScreen() {
             attendees={item.attendees}
           />
         )}
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.sectionHeader}>
+            <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
+          </View>
+        )}
       />
     </SafeAreaView>
   );
@@ -164,11 +217,22 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#eee",
   },
   scrollContent: {
     padding: 16,
     paddingRight: 0,
+  },
+  sectionHeader: {
+    paddingVertical: 4,
+    paddingRight: 16,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#00AB9E",
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   cardContainer: {
     marginBottom: 16,

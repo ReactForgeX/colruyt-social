@@ -8,18 +8,24 @@ import { ThemedText } from './ThemedText';
 type GradientHeaderProps = {
   title: string;
   height?: number;
-  showProfileButton?: boolean;
+  showSettingsButton?: boolean;
+  showBackButton?: boolean;
 };
 
 export default function GradientHeader({ 
   title, 
   height = 56,
-  showProfileButton = true
+  showSettingsButton = true,
+  showBackButton = false
 }: GradientHeaderProps) {
   const router = useRouter();
 
-  const handleProfilePress = () => {
-    router.push('/(profile)');
+  const handleSettingsPress = () => {
+    router.push('/settings');
+  };
+
+  const handleBackPress = () => {
+    router.back();
   };
 
   return (
@@ -37,13 +43,23 @@ export default function GradientHeader({
       style={[styles.gradient, { height }]}
     >
       <View style={styles.content}>
-        <ThemedText style={styles.title}>{title}</ThemedText>
-        {showProfileButton && (
+        <View style={styles.leftContainer}>
+          {showBackButton && (
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={handleBackPress}
+            >
+              <MaterialIcons name="arrow-back" size={28} color="#fff" />
+            </TouchableOpacity>
+          )}
+          <ThemedText style={[styles.title, showBackButton && styles.titleWithBack]}>{title}</ThemedText>
+        </View>
+        {showSettingsButton && (
           <TouchableOpacity
-            style={styles.profileButton}
-            onPress={handleProfilePress}
+            style={styles.settingsButton}
+            onPress={handleSettingsPress}
           >
-            <MaterialIcons name="account-circle" size={32} color="#fff" />
+            <MaterialIcons name="settings" size={28} color="#fff" />
           </TouchableOpacity>
         )}
       </View>
@@ -62,6 +78,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
   },
+  leftContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
   title: {
     fontSize: 20,
     fontWeight: '600',
@@ -70,7 +91,14 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
-  profileButton: {
+  titleWithBack: {
+    marginLeft: 16,
+  },
+  backButton: {
+    padding: 8,
+    marginLeft: -8,
+  },
+  settingsButton: {
     padding: 8,
   },
 });

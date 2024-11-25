@@ -15,7 +15,30 @@ import { ThemedView } from "@/components/ThemedView";
 import SocialPost from "@/components/SocialPost";
 import { Images } from "@/constants/Images";
 import { Videos } from "@/constants/Videos";
+import { Avatars } from "@/constants/Avatars";
 import GradientHeader from "@/components/GradientHeader";
+
+const PendingPollCard = () => {
+  const router = useRouter();
+
+  return (
+    <TouchableOpacity 
+      onPress={() => router.push("/poll")}
+      activeOpacity={1}
+    >
+      <ThemedView style={styles.pollCard}>
+        <View style={styles.pollIconContainer}>
+          <MaterialIcons name="poll" size={24} color="#F97316" />
+        </View>
+        <View style={styles.pollContent}>
+          <ThemedText style={styles.pollTitle}>You have a pending Poll</ThemedText>
+          <ThemedText style={styles.pollTeam}>HR Team</ThemedText>
+        </View>
+        <MaterialIcons name="chevron-right" size={24} color="#F97316" />
+      </ThemedView>
+    </TouchableOpacity>
+  );
+};
 
 type MediaItem = {
   type: "image" | "video";
@@ -25,7 +48,7 @@ type MediaItem = {
 type Post = {
   id: string;
   username: string;
-  avatarKey: string;
+  avatarKey: keyof typeof Avatars;
   content: string;
   media?: MediaItem[];
   likes: number;
@@ -37,31 +60,21 @@ type Post = {
 const initialPosts: Post[] = [
   {
     id: "1",
-    username: "Colruyt Team",
-    avatarKey: "default",
-    content:
-      " Exciting news! We're launching a new initiative to reduce food waste in our stores. Check out how we're making a difference!",
-    media: [
-      { type: "video", key: "sustainabilityInitiative" },
-      { type: "image", key: "sustainability" },
-    ],
-    likes: 245,
-    comments: 42,
-    timestamp: "2h ago",
+    username: "John Doe",
+    avatarKey: "user1",  
+    content: "First post on Colruyt Social!",
+    likes: 5,
+    comments: 2,
+    timestamp: new Date().toISOString(),
   },
   {
     id: "2",
-    username: "Store Manager",
-    avatarKey: "user2",
-    content:
-      " Take a virtual tour of our newly renovated store in Brussels! We've made it more sustainable and customer-friendly.",
-    media: [
-      { type: "image", key: "store" },
-      { type: "video", key: "storeWalkthrough" },
-    ],
-    likes: 189,
-    comments: 28,
-    timestamp: "4h ago",
+    username: "Jane Smith",
+    avatarKey: "user2",  
+    content: "Enjoying my day at Colruyt!",
+    likes: 10,
+    comments: 3,
+    timestamp: new Date().toISOString(),
   },
   {
     id: "3",
@@ -136,6 +149,7 @@ export default function HomeScreen() {
       <SafeAreaView edges={["top"]} style={styles.safeArea}>
         <GradientHeader title="Colruyt Social" />
         <FlatList
+          ListHeaderComponent={<PendingPollCard />}
           data={posts}
           renderItem={renderPost}
           keyExtractor={(item) => item.id}
@@ -166,5 +180,36 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 16,
+  },
+  pollCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF7ED',
+    margin: 5,
+    padding: 12,
+    borderRadius: 12,
+  },
+  pollIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFEDD5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  pollContent: {
+    flex: 1,
+  },
+  pollTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#F97316',
+    marginBottom: 2,
+  },
+  pollTeam: {
+    fontSize: 12,
+    color: '#FB923C',
+    fontWeight: '500',
   },
 });

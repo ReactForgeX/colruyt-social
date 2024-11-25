@@ -35,11 +35,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="people"
+        name="search"
         options={{
-          title: "People",
+          title: "Search",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="people" size={size} color={color} />
+            <MaterialIcons name="search" size={size} color={color} />
           ),
         }}
       />
@@ -58,20 +58,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="blog"
-        options={{
-          title: "Blog",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="article" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="events"
         options={{
           title: "Events",
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="event" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="me"
+        options={{
+          title: "Me",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="account-circle" size={size} color={color} />
           ),
         }}
       />

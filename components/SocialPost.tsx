@@ -6,6 +6,9 @@ import {
   StyleSheet,
   Dimensions,
   Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Video } from 'expo-av';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -16,8 +19,18 @@ import { Avatars } from "@/constants/Avatars";
 import { Images } from "@/constants/Images";
 import { Videos } from "@/constants/Videos";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { CommentsPanel } from "./CommentsPanel";
 
 const { width, height } = Dimensions.get("window");
+
+interface Comment {
+  id: string;
+  username: string;
+  content: string;
+  timestamp: string;
+  avatarKey?: keyof typeof Avatars;
+  likes?: number;
+}
 
 interface SocialPostProps {
   username: string;
@@ -31,7 +44,10 @@ interface SocialPostProps {
   allowDelete?: boolean;
   likes: number;
   comments: number;
+  commentsList?: Comment[];
   onDelete?: () => void;
+  onAddComment?: (content: string) => void;
+  onLikeComment?: (commentId: string) => void;
 }
 
 const SocialPost = ({
@@ -43,14 +59,32 @@ const SocialPost = ({
   allowDelete = false,
   likes,
   comments,
+  commentsList = [],
   onDelete,
+  onAddComment,
+  onLikeComment,
 }: SocialPostProps) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isImageFullscreen, setIsImageFullscreen] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [likedComments, setLikedComments] = useState<{ [key: string]: boolean }>({});
   const colorScheme = useColorScheme();
   const videoRef = useRef<Video>(null);
+
+  const handleLikeComment = (commentId: string) => {
+    setLikedComments(prev => ({ ...prev, [commentId]: !prev[commentId] }));
+    onLikeComment?.(commentId);
+  };
+
+  const handleSendComment = () => {
+    if (newComment.trim()) {
+      onAddComment?.(newComment.trim());
+      setNewComment('');
+    }
+  };
 
   const currentMedia = media?.[currentMediaIndex];
 
@@ -217,12 +251,113 @@ const SocialPost = ({
         <TouchableOpacity
           style={styles.footerButton}
         >
-          <ThemedText style={styles.footerButtonText}>♥ {likes}</ThemedText>
+          <View style={styles.interactionContainer}>
+            <MaterialIcons name="favorite-border" size={24} color="#FF4081" />
+            <ThemedText style={styles.interactionText}>{likes}</ThemedText>
+          </View>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <ThemedText style={styles.footerButtonText}>💬 {comments}</ThemedText>
+        <TouchableOpacity 
+          style={styles.footerButton}
+          onPress={() => setShowComments(!showComments)}
+        >
+          <View style={styles.interactionContainer}>
+            <MaterialIcons name="chat-bubble-outline" size={22} color="#2196F3" />
+            <ThemedText style={styles.interactionText}>{comments}</ThemedText>
+          </View>
         </TouchableOpacity>
       </View>
+
+      {showComments && (
+        <View style={styles.commentsSection}>
+          {commentsList.map((comment) => (
+            <View key={comment.id} style={styles.commentItem}>
+              <View style={styles.commentHeader}>
+                <View style={styles.commentUser}>
+                  <Image
+                    source={Avatars[comment.avatarKey || 'default']}
+                    style={styles.commentAvatar}
+                  />
+                  <View style={styles.commentBubble}>
+                    <ThemedText style={styles.commentUsername}>
+                      {comment.username}
+                    </ThemedText>
+                    <ThemedText style={styles.commentContent}>
+                      {comment.content}
+                    </ThemedText>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.commentActions}>
+                <TouchableOpacity 
+                  onPress={() => handleLikeComment(comment.id)}
+                  style={styles.commentAction}
+                >
+                  <ThemedText 
+                    style={[
+                      styles.commentActionText,
+                      likedComments[comment.id] && styles.commentActionTextLiked
+                    ]}
+                  >
+                    Like
+                  </ThemedText>
+                </TouchableOpacity>
+                <ThemedText style={styles.commentDot}>•</ThemedText>
+                <ThemedText style={styles.commentTimestamp}>{comment.timestamp}</ThemedText>
+                {comment.likes && comment.likes > 0 && (
+                  <>
+                    <ThemedText style={styles.commentDot}>•</ThemedText>
+                    <View style={styles.commentLikes}>
+                      <MaterialIcons 
+                        name={likedComments[comment.id] ? "favorite" : "favorite-border"} 
+                        size={12} 
+                        color={likedComments[comment.id] ? "#FF4081" : "#666666"}
+                      />
+                      <ThemedText style={styles.commentLikesText}>
+                        {comment.likes + (likedComments[comment.id] ? 1 : 0)}
+                      </ThemedText>
+                    </View>
+                  </>
+                )}
+              </View>
+            </View>
+          ))}
+          
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.commentInputContainer}
+          >
+            <Image
+              source={Avatars[avatarKey]}
+              style={styles.commentAvatar}
+            />
+            <View style={styles.commentInputWrapper}>
+              <TextInput
+                style={styles.commentInput}
+                placeholder="Write a comment..."
+                placeholderTextColor="#666666"
+                value={newComment}
+                onChangeText={setNewComment}
+                multiline
+                returnKeyType="default"
+              />
+              <TouchableOpacity 
+                style={[
+                  styles.sendButton,
+                  !newComment.trim() && styles.sendButtonDisabled
+                ]}
+                onPress={handleSendComment}
+                disabled={!newComment.trim()}
+              >
+                <MaterialIcons 
+                  name="send" 
+                  size={20} 
+                  color={newComment.trim() ? "#2196F3" : "#BDBDBD"}
+                />
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      )}
 
       <Modal
         visible={showDeleteConfirm}
@@ -340,17 +475,23 @@ const styles = StyleSheet.create({
     textShadowRadius: 3,
   },
   footer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 12,
-    gap: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
   },
   footerButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    marginRight: 24,
   },
-  footerButtonText: {
+  interactionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  interactionText: {
+    marginLeft: 6,
     fontSize: 14,
-    color: "#666666",
+    color: '#666666',
+    fontWeight: '500',
   },
   modalOverlay: {
     flex: 1,
@@ -401,6 +542,114 @@ const styles = StyleSheet.create({
     right: 20,
     zIndex: 1,
     padding: 8,
+  },
+  commentsSection: {
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  commentItem: {
+    marginTop: 12,
+  },
+  commentHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  commentUser: {
+    flexDirection: 'row',
+    flex: 1,
+  },
+  commentAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+  },
+  commentBubble: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 18,
+    padding: 8,
+    paddingHorizontal: 12,
+    flex: 1,
+  },
+  commentUsername: {
+    fontWeight: '600',
+    fontSize: 13,
+    marginBottom: 2,
+  },
+  commentContent: {
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  commentActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 40,
+    marginTop: 4,
+  },
+  commentAction: {
+    marginRight: 4,
+  },
+  commentActionText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#666666',
+  },
+  commentActionTextLiked: {
+    color: '#FF4081',
+  },
+  commentDot: {
+    fontSize: 12,
+    color: '#666666',
+    marginHorizontal: 4,
+  },
+  commentTimestamp: {
+    fontSize: 12,
+    color: '#666666',
+  },
+  commentLikes: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  commentLikesText: {
+    fontSize: 12,
+    color: '#666666',
+    marginLeft: 4,
+  },
+  commentInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginTop: 12,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  commentInputWrapper: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 20,
+    minHeight: 36,
+    maxHeight: 100,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    paddingRight: 8,
+  },
+  commentInput: {
+    flex: 1,
+    fontSize: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    maxHeight: 100,
+    paddingRight: 40,
+  },
+  sendButton: {
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sendButtonDisabled: {
+    opacity: 0.5,
   },
 });
 

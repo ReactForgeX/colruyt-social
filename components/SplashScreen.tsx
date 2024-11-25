@@ -127,7 +127,6 @@ const getPartnerLogoPosition = (angle: number, distance: number, index: number, 
 
 const CustomSplashScreen = ({ onAnimationComplete }: SplashScreenProps) => {
   const partnerScales = partnerLogos.map(() => new Animated.Value(0));
-  const floatAnimation = new Animated.Value(0);
   const gradientPosition = new Animated.Value(0);
 
   useEffect(() => {
@@ -188,24 +187,6 @@ const CustomSplashScreen = ({ onAnimationComplete }: SplashScreenProps) => {
   }, []);
 
   useEffect(() => {
-    // Floating animation for main logo
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(floatAnimation, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-          easing: Easing.bezier(0.4, 0, 0.2, 1),
-        }),
-        Animated.timing(floatAnimation, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: true,
-          easing: Easing.bezier(0.4, 0, 0.2, 1),
-        }),
-      ])
-    ).start();
-
     // Animated gradient
     Animated.loop(
       Animated.sequence([
@@ -261,21 +242,9 @@ const CustomSplashScreen = ({ onAnimationComplete }: SplashScreenProps) => {
           );
         })}
 
-        <Animated.View
-          style={[
-            styles.logo,
-            {
-              transform: [
-                { translateY: floatAnimation.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-MAIN_LOGO_SIZE * 0.25, -MAIN_LOGO_SIZE * 0.28]
-                }) }
-              ]
-            }
-          ]}
-        >
+        <View style={styles.logo}>
           <SvgXml xml={colruytLogoSvg} width="100%" height="100%" />
-        </Animated.View>
+        </View>
       </AnimatedLinearGradient>
     </View>
   );
