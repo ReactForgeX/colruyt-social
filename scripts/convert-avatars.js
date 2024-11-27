@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+
 const sharp = require('sharp');
 
 const avatarsDir = path.join(__dirname, '..', 'assets', 'avatars');
@@ -12,7 +13,7 @@ const colors = [
   '#96CEB4', // Green
   '#FFEEAD', // Yellow
   '#D4A5A5', // Pink
-  '#9FA8DA'  // Purple
+  '#9FA8DA', // Purple
 ];
 
 const avatars = [
@@ -22,14 +23,14 @@ const avatars = [
   { name: 'user4', initials: 'SW' },
   { name: 'user5', initials: 'DC' },
   { name: 'user6', initials: 'AK' },
-  { name: 'default', initials: '?' }
+  { name: 'default', initials: '?' },
 ];
 
 async function generateAvatar(name, initials, color) {
   const size = 200;
   const svg = `
     <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="${size/2}" cy="${size/2}" r="${size/2}" fill="${color}"/>
+      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="${color}"/>
       <text 
         x="50%" 
         y="50%" 
@@ -42,12 +43,9 @@ async function generateAvatar(name, initials, color) {
   `;
 
   const outputPath = path.join(avatarsDir, `${name}.png`);
-  
+
   try {
-    await sharp(Buffer.from(svg))
-      .resize(size, size)
-      .png()
-      .toFile(outputPath);
+    await sharp(Buffer.from(svg)).resize(size, size).png().toFile(outputPath);
     console.log(`Created ${name}.png`);
   } catch (error) {
     console.error(`Error creating ${name}.png:`, error);

@@ -5,13 +5,13 @@ export const Images = {
   localProduce: require('../assets/images/local-produce.jpg'),
   store: require('../assets/images/store.jpg'),
   team: require('../assets/images/team.jpg'),
-  
+
   // Default images
   placeholder: require('../assets/images/placeholder.jpg'),
   default: require('../assets/images/placeholder.jpg'),
   image1: require('../assets/images/sustainability.jpg'),
   image2: require('../assets/images/store.jpg'),
-  
+
   // Profile images
   user1: require('../assets/images/placeholder.jpg'),
   user2: require('../assets/images/placeholder.jpg'),

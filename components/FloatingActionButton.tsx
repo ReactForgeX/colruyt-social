@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+
 import { ThemedText } from './ThemedText';
 
 interface FloatingActionButtonProps {
@@ -10,10 +11,7 @@ interface FloatingActionButtonProps {
 
 export function FloatingActionButton({ onPress, icon = '+', style }: FloatingActionButtonProps) {
   return (
-    <TouchableOpacity
-      style={[styles.fab, style]}
-      onPress={onPress}
-      activeOpacity={0.8}>
+    <TouchableOpacity style={[styles.fab, style]} onPress={onPress} activeOpacity={0.8}>
       <ThemedText style={styles.fabIcon}>{icon}</ThemedText>
     </TouchableOpacity>
   );

@@ -1,8 +1,9 @@
-import { Platform, StyleSheet } from "react-native";
-import { Tabs } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { MaterialIcons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
+import { Platform, StyleSheet } from 'react-native';
+
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -24,11 +25,11 @@ export default function TabLayout() {
           fontSize: 12,
         },
       }}
-    >
+      initialRouteName="feeds">
       <Tabs.Screen
         name="feeds"
         options={{
-          title: "Feeds",
+          title: 'Feeds',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="rss-feed" size={size} color={color} />
           ),
@@ -37,7 +38,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Search",
+          title: 'Search',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="search" size={size} color={color} />
           ),
@@ -46,30 +47,23 @@ export default function TabLayout() {
       <Tabs.Screen
         name="create"
         options={{
-          title: "Create",
+          title: 'Create',
           tabBarIcon: ({ color }) => (
-            <MaterialIcons 
-              name="add-circle" 
-              size={32} 
-              color={color}
-              style={styles.createIcon} 
-            />
+            <MaterialIcons name="add-circle" size={32} color={color} style={styles.createIcon} />
           ),
         }}
       />
       <Tabs.Screen
         name="events"
         options={{
-          title: "Events",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="event" size={size} color={color} />
-          ),
+          title: 'Events',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="event" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="me"
         options={{
-          title: "Me",
+          title: 'Me',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="account-circle" size={size} color={color} />
           ),

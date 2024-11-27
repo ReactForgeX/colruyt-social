@@ -15,7 +15,7 @@ const colors = [
   '#96CEB4', // Green
   '#FFEEAD', // Yellow
   '#D4A5A5', // Pink
-  '#9FA8DA'  // Purple
+  '#9FA8DA', // Purple
 ];
 
 const createAvatarSVG = (initials, bgColor) => `
@@ -32,7 +32,7 @@ const avatars = [
   { name: 'user4', initials: 'SW' },
   { name: 'user5', initials: 'DC' },
   { name: 'user6', initials: 'AK' },
-  { name: 'default', initials: '?' }
+  { name: 'default', initials: '?' },
 ];
 
 avatars.forEach((avatar, index) => {

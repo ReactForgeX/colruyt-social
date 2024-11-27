@@ -4,11 +4,11 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import Toast from 'react-native-toast-message';
 import { View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
 import CustomSplashScreen from '@/components/SplashScreen';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,7 +34,11 @@ export default function RootLayout() {
   if (showSplash) {
     return (
       <View style={{ flex: 1 }}>
-        <CustomSplashScreen onAnimationComplete={() => setShowSplash(false)} />
+        <CustomSplashScreen
+          onAnimationComplete={() => {
+            setShowSplash(false);
+          }}
+        />
       </View>
     );
   }

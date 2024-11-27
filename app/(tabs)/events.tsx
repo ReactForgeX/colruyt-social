@@ -1,16 +1,11 @@
-import React from "react";
-import {
-  StyleSheet,
-  View,
-  SectionList,
-  TouchableOpacity,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, View, SectionList, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import GradientHeader from "@/components/GradientHeader";
+import GradientHeader from '@/components/GradientHeader';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 
 // Define an Event type
 type Event = {
@@ -33,10 +28,10 @@ const groupEventsByDate = (events: Event[]) => {
   nextWeek.setDate(nextWeek.getDate() + 7);
 
   const sections: { title: string; data: Event[] }[] = [
-    { title: "Today", data: [] },
-    { title: "Tomorrow", data: [] },
-    { title: "This Week", data: [] },
-    { title: "Later", data: [] },
+    { title: 'Today', data: [] },
+    { title: 'Tomorrow', data: [] },
+    { title: 'This Week', data: [] },
+    { title: 'Later', data: [] },
   ];
 
   events.forEach(event => {
@@ -60,48 +55,48 @@ const groupEventsByDate = (events: Event[]) => {
 // Sample data for events
 const eventsData: Event[] = [
   {
-    id: "1",
-    title: "Sustainability Workshop",
+    id: '1',
+    title: 'Sustainability Workshop',
     date: new Date().toISOString().split('T')[0], // Today
-    time: "09:00 - 17:00",
-    location: "Colruyt Headquarters, Brussels",
-    category: "Workshop",
+    time: '09:00 - 17:00',
+    location: 'Colruyt Headquarters, Brussels',
+    category: 'Workshop',
     attendees: 45,
   },
   {
-    id: "2",
-    title: "Community Market Day",
+    id: '2',
+    title: 'Community Market Day',
     date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
-    time: "10:00 - 18:00",
-    location: "Colruyt Store, Ghent",
-    category: "Market",
+    time: '10:00 - 18:00',
+    location: 'Colruyt Store, Ghent',
+    category: 'Market',
     attendees: 120,
   },
   {
-    id: "3",
-    title: "Digital Innovation Talk",
+    id: '3',
+    title: 'Digital Innovation Talk',
     date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0], // 3 days later
-    time: "15:30 - 17:30",
-    location: "Virtual Event",
-    category: "Tech Talk",
+    time: '15:30 - 17:30',
+    location: 'Virtual Event',
+    category: 'Tech Talk',
     attendees: 89,
   },
   {
-    id: "4",
-    title: "Team Building Day",
+    id: '4',
+    title: 'Team Building Day',
     date: new Date(Date.now() + 86400000 * 10).toISOString().split('T')[0], // 10 days later
-    time: "09:00 - 17:00",
-    location: "Colruyt Sports Center",
-    category: "Team Event",
+    time: '09:00 - 17:00',
+    location: 'Colruyt Sports Center',
+    category: 'Team Event',
     attendees: 75,
   },
   {
-    id: "5",
-    title: "Customer Experience Workshop",
+    id: '5',
+    title: 'Customer Experience Workshop',
     date: new Date(Date.now() + 86400000 * 15).toISOString().split('T')[0], // 15 days later
-    time: "13:00 - 16:00",
-    location: "Training Center, Antwerp",
-    category: "Workshop",
+    time: '13:00 - 16:00',
+    location: 'Training Center, Antwerp',
+    category: 'Workshop',
     attendees: 35,
   },
 ];
@@ -115,25 +110,17 @@ interface EventCardProps {
   attendees: number;
 }
 
-function EventCard({
-  title,
-  date,
-  time,
-  location,
-  category,
-  attendees,
-}: EventCardProps) {
+function EventCard({ title, date, time, location, category, attendees }: EventCardProps) {
   const [isInterested, setIsInterested] = React.useState(false);
-  const formattedDate = new Date(date).toLocaleDateString("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
+  const formattedDate = new Date(date).toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
   });
 
   const handleInterestPress = () => {
     setIsInterested(!isInterested);
   };
-
 
   return (
     <View style={styles.cardContainer}>
@@ -160,23 +147,15 @@ function EventCard({
         <View style={[styles.infoRow, styles.interestRow]}>
           <View style={{ flex: 1 }} />
           <TouchableOpacity
-            style={[
-              styles.interestButton,
-              isInterested && styles.interestedButton,
-            ]}
-            onPress={handleInterestPress}
-          >
+            style={[styles.interestButton, isInterested && styles.interestedButton]}
+            onPress={handleInterestPress}>
             <MaterialIcons
-              name={isInterested ? "favorite" : "favorite-outline"}
+              name={isInterested ? 'favorite' : 'favorite-outline'}
               size={16}
-              color={isInterested ? "#00ab9e" : "#666666"}
+              color={isInterested ? '#00ab9e' : '#666666'}
             />
             <ThemedText
-              style={[
-                styles.interestButtonText,
-                isInterested && styles.interestedButtonText,
-              ]}
-            >
+              style={[styles.interestButtonText, isInterested && styles.interestedButtonText]}>
               {attendees} interested
             </ThemedText>
           </TouchableOpacity>
@@ -190,11 +169,11 @@ export default function EventsScreen() {
   const sections = groupEventsByDate(eventsData);
 
   return (
-    <SafeAreaView edges={["top"]} style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}>
       <GradientHeader title="Events & Announcements" />
       <SectionList
         sections={sections}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollView}
         renderItem={({ item }) => (
@@ -220,11 +199,11 @@ export default function EventsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#001824",
+    backgroundColor: '#001824',
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#eee",
+    backgroundColor: '#eee',
   },
   scrollContent: {
     padding: 16,
@@ -236,8 +215,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: "600",
-    color: "#00AB9E",
+    fontWeight: '600',
+    color: '#00AB9E',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -245,7 +224,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderTopLeftRadius: 12,
     borderBottomLeftRadius: 12,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -256,22 +235,22 @@ const styles = StyleSheet.create({
     marginRight: 0,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     borderWidth: 1,
     borderRightWidth: 0,
-    borderColor: "#e5e5e5",
+    borderColor: '#e5e5e5',
     padding: 16,
     borderTopLeftRadius: 12,
     borderBottomLeftRadius: 12,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   cardHeader: {
     marginBottom: 8,
   },
   title: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#000000",
+    fontWeight: '600',
+    color: '#000000',
     marginBottom: 4,
   },
   cardContent: {
@@ -279,38 +258,38 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   interestRow: {
-    marginTop: "auto",
+    marginTop: 'auto',
     marginRight: -16,
     marginBottom: -16,
   },
   infoText: {
     fontSize: 14,
-    color: "#666666",
+    color: '#666666',
     flex: 1,
   },
   interestButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     paddingVertical: 6,
     paddingLeft: 12,
     paddingRight: 24,
     borderTopLeftRadius: 20,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
   },
   interestedButton: {
-    backgroundColor: "#e6f7f6",
+    backgroundColor: '#e6f7f6',
   },
   interestButtonText: {
     fontSize: 14,
-    color: "#666666",
+    color: '#666666',
   },
   interestedButtonText: {
-    color: "#00ab9e",
+    color: '#00ab9e',
   },
 });
