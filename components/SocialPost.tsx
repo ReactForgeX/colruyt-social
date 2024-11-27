@@ -1,4 +1,6 @@
-import React, { useState, useRef } from "react";
+import { MaterialIcons } from '@expo/vector-icons';
+import { Video } from 'expo-av';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Image,
@@ -9,19 +11,18 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import { Video } from 'expo-av';
-import { MaterialIcons } from '@expo/vector-icons';
+} from 'react-native';
 
-import { ThemedText } from "./ThemedText";
-import { ThemedView } from "./ThemedView";
-import { Avatars } from "@/constants/Avatars";
-import { Images } from "@/constants/Images";
-import { Videos } from "@/constants/Videos";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { CommentsPanel } from "./CommentsPanel";
+import { CommentsPanel } from './CommentsPanel';
+import { ThemedText } from './ThemedText';
+import { ThemedView } from './ThemedView';
 
-const { width, height } = Dimensions.get("window");
+import { Avatars } from '@/constants/Avatars';
+import { Images } from '@/constants/Images';
+import { Videos } from '@/constants/Videos';
+import { useColorScheme } from '@/hooks/useColorScheme';
+
+const { width, height } = Dimensions.get('window');
 
 interface Comment {
   id: string;
@@ -36,10 +37,10 @@ interface SocialPostProps {
   username: string;
   avatarKey?: keyof typeof Avatars;
   content: string;
-  media?: Array<{
-    type: "image" | "video";
+  media?: {
+    type: 'image' | 'video';
     key: keyof typeof Images | keyof typeof Videos;
-  }>;
+  }[];
   timestamp: string;
   allowDelete?: boolean;
   likes: number;
@@ -52,7 +53,7 @@ interface SocialPostProps {
 
 const SocialPost = ({
   username,
-  avatarKey = "default",
+  avatarKey = 'default',
   content,
   media,
   timestamp,
@@ -138,22 +139,13 @@ const SocialPost = ({
   };
 
   return (
-    <ThemedView
-      style={[styles.container, { backgroundColor: '#ffffff' }]}
-    >
+    <ThemedView style={[styles.container, { backgroundColor: '#ffffff' }]}>
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <Image
-            source={Avatars[avatarKey]}
-            style={styles.avatar}
-          />
+          <Image source={Avatars[avatarKey]} style={styles.avatar} />
           <View>
-            <ThemedText style={styles.username}>
-              {username}
-            </ThemedText>
-            <ThemedText style={styles.timestamp}>
-              {timestamp}
-            </ThemedText>
+            <ThemedText style={styles.username}>{username}</ThemedText>
+            <ThemedText style={styles.timestamp}>{timestamp}</ThemedText>
           </View>
         </View>
         {allowDelete && (
@@ -163,13 +155,11 @@ const SocialPost = ({
         )}
       </View>
 
-      <ThemedText style={styles.content}>
-        {content}
-      </ThemedText>
+      <ThemedText style={styles.content}>{content}</ThemedText>
 
       {media && media.length > 0 && (
         <View style={styles.mediaContainer}>
-          {currentMedia.type === "image" ? (
+          {currentMedia.type === 'image' ? (
             <>
               <TouchableOpacity onPress={handleImagePress}>
                 <Image
@@ -180,14 +170,16 @@ const SocialPost = ({
               </TouchableOpacity>
               <Modal
                 visible={isImageFullscreen}
-                transparent={true}
-                onRequestClose={() => setIsImageFullscreen(false)}
-              >
+                transparent
+                onRequestClose={() => {
+                  setIsImageFullscreen(false);
+                }}>
                 <View style={styles.fullscreenContainer}>
                   <TouchableOpacity
                     style={styles.closeButton}
-                    onPress={() => setIsImageFullscreen(false)}
-                  >
+                    onPress={() => {
+                      setIsImageFullscreen(false);
+                    }}>
                     <MaterialIcons name="close" size={28} color="#fff" />
                   </TouchableOpacity>
                   <Image
@@ -199,15 +191,16 @@ const SocialPost = ({
               </Modal>
             </>
           ) : (
-            <TouchableOpacity 
-              onPress={handleVideoPress}
-              activeOpacity={0.9}
-            >
+            <TouchableOpacity onPress={handleVideoPress} activeOpacity={0.9}>
               <Video
                 ref={videoRef}
-                source={currentMedia?.type === 'video' ? Videos[currentMedia.key as keyof typeof Videos] : undefined}
+                source={
+                  currentMedia?.type === 'video'
+                    ? Videos[currentMedia.key as keyof typeof Videos]
+                    : undefined
+                }
                 style={styles.media}
-                resizeMode={isFullscreen ? "contain" : "cover"}
+                resizeMode={isFullscreen ? 'contain' : 'cover'}
                 shouldPlay
                 isLooping
                 isMuted={!isFullscreen}
@@ -220,13 +213,9 @@ const SocialPost = ({
           {media.length > 1 && (
             <View style={styles.mediaControls}>
               <TouchableOpacity
-                style={[
-                  styles.mediaButton,
-                  currentMediaIndex === 0 && styles.mediaButtonDisabled,
-                ]}
+                style={[styles.mediaButton, currentMediaIndex === 0 && styles.mediaButtonDisabled]}
                 onPress={goToPreviousMedia}
-                disabled={currentMediaIndex === 0}
-              >
+                disabled={currentMediaIndex === 0}>
                 <MaterialIcons name="chevron-left" size={24} color="#333" />
               </TouchableOpacity>
               <ThemedText style={styles.mediaCounter}>
@@ -238,8 +227,7 @@ const SocialPost = ({
                   currentMediaIndex === media.length - 1 && styles.mediaButtonDisabled,
                 ]}
                 onPress={goToNextMedia}
-                disabled={currentMediaIndex === media.length - 1}
-              >
+                disabled={currentMediaIndex === media.length - 1}>
                 <MaterialIcons name="chevron-right" size={24} color="#333" />
               </TouchableOpacity>
             </View>
@@ -248,18 +236,17 @@ const SocialPost = ({
       )}
 
       <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.footerButton}
-        >
+        <TouchableOpacity style={styles.footerButton}>
           <View style={styles.interactionContainer}>
             <MaterialIcons name="favorite-border" size={24} color="#FF4081" />
             <ThemedText style={styles.interactionText}>{likes}</ThemedText>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.footerButton}
-          onPress={() => setShowComments(!showComments)}
-        >
+          onPress={() => {
+            setShowComments(!showComments);
+          }}>
           <View style={styles.interactionContainer}>
             <MaterialIcons name="chat-bubble-outline" size={22} color="#2196F3" />
             <ThemedText style={styles.interactionText}>{comments}</ThemedText>
@@ -269,7 +256,7 @@ const SocialPost = ({
 
       {showComments && (
         <View style={styles.commentsSection}>
-          {commentsList.map((comment) => (
+          {commentsList.map(comment => (
             <View key={comment.id} style={styles.commentItem}>
               <View style={styles.commentHeader}>
                 <View style={styles.commentUser}>
@@ -278,26 +265,22 @@ const SocialPost = ({
                     style={styles.commentAvatar}
                   />
                   <View style={styles.commentBubble}>
-                    <ThemedText style={styles.commentUsername}>
-                      {comment.username}
-                    </ThemedText>
-                    <ThemedText style={styles.commentContent}>
-                      {comment.content}
-                    </ThemedText>
+                    <ThemedText style={styles.commentUsername}>{comment.username}</ThemedText>
+                    <ThemedText style={styles.commentContent}>{comment.content}</ThemedText>
                   </View>
                 </View>
               </View>
               <View style={styles.commentActions}>
-                <TouchableOpacity 
-                  onPress={() => handleLikeComment(comment.id)}
-                  style={styles.commentAction}
-                >
-                  <ThemedText 
+                <TouchableOpacity
+                  onPress={() => {
+                    handleLikeComment(comment.id);
+                  }}
+                  style={styles.commentAction}>
+                  <ThemedText
                     style={[
                       styles.commentActionText,
-                      likedComments[comment.id] && styles.commentActionTextLiked
-                    ]}
-                  >
+                      likedComments[comment.id] && styles.commentActionTextLiked,
+                    ]}>
                     Like
                   </ThemedText>
                 </TouchableOpacity>
@@ -307,10 +290,10 @@ const SocialPost = ({
                   <>
                     <ThemedText style={styles.commentDot}>•</ThemedText>
                     <View style={styles.commentLikes}>
-                      <MaterialIcons 
-                        name={likedComments[comment.id] ? "favorite" : "favorite-border"} 
-                        size={12} 
-                        color={likedComments[comment.id] ? "#FF4081" : "#666666"}
+                      <MaterialIcons
+                        name={likedComments[comment.id] ? 'favorite' : 'favorite-border'}
+                        size={12}
+                        color={likedComments[comment.id] ? '#FF4081' : '#666666'}
                       />
                       <ThemedText style={styles.commentLikesText}>
                         {comment.likes + (likedComments[comment.id] ? 1 : 0)}
@@ -321,15 +304,11 @@ const SocialPost = ({
               </View>
             </View>
           ))}
-          
+
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.commentInputContainer}
-          >
-            <Image
-              source={Avatars[avatarKey]}
-              style={styles.commentAvatar}
-            />
+            style={styles.commentInputContainer}>
+            <Image source={Avatars[avatarKey]} style={styles.commentAvatar} />
             <View style={styles.commentInputWrapper}>
               <TextInput
                 style={styles.commentInput}
@@ -340,18 +319,14 @@ const SocialPost = ({
                 multiline
                 returnKeyType="default"
               />
-              <TouchableOpacity 
-                style={[
-                  styles.sendButton,
-                  !newComment.trim() && styles.sendButtonDisabled
-                ]}
+              <TouchableOpacity
+                style={[styles.sendButton, !newComment.trim() && styles.sendButtonDisabled]}
                 onPress={handleSendComment}
-                disabled={!newComment.trim()}
-              >
-                <MaterialIcons 
-                  name="send" 
-                  size={20} 
-                  color={newComment.trim() ? "#2196F3" : "#BDBDBD"}
+                disabled={!newComment.trim()}>
+                <MaterialIcons
+                  name="send"
+                  size={20}
+                  color={newComment.trim() ? '#2196F3' : '#BDBDBD'}
                 />
               </TouchableOpacity>
             </View>
@@ -363,42 +338,38 @@ const SocialPost = ({
         visible={showDeleteConfirm}
         transparent
         animationType="fade"
-        onRequestClose={() => setShowDeleteConfirm(false)}
-      >
+        onRequestClose={() => {
+          setShowDeleteConfirm(false);
+        }}>
         <View style={styles.modalOverlay}>
           <ThemedView style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <ThemedText style={styles.modalTitle}>Delete Post?</ThemedText>
             </View>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={confirmDelete}
-            >
-              <ThemedText style={styles.deleteButtonText}>
-                Delete
-              </ThemedText>
+            <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
+              <ThemedText style={styles.deleteButtonText}>Delete</ThemedText>
             </TouchableOpacity>
           </ThemedView>
         </View>
       </Modal>
     </ThemedView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 12,
   },
   userInfo: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   avatar: {
     width: 40,
@@ -408,17 +379,17 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#000000",
+    fontWeight: '600',
+    color: '#000000',
   },
   timestamp: {
     fontSize: 12,
-    color: "#666666",
+    color: '#666666',
     marginTop: 2,
   },
   menuDots: {
     fontSize: 20,
-    color: "#666666",
+    color: '#666666',
     marginRight: 8,
   },
   content: {
@@ -426,34 +397,34 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     paddingHorizontal: 12,
     paddingBottom: 12,
-    color: "#333333",
+    color: '#333333',
   },
   mediaContainer: {
-    position: "relative",
+    position: 'relative',
   },
   media: {
-    width: width,
+    width,
     height: width * 0.75,
     backgroundColor: '#000',
   },
   mediaControls: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 16,
     left: 16,
     right: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "transparent",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   mediaButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -464,12 +435,12 @@ const styles = StyleSheet.create({
   },
   mediaButtonDisabled: {
     opacity: 0.4,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
   },
   mediaCounter: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
@@ -495,35 +466,35 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContent: {
-    width: "80%",
-    backgroundColor: "#FFFFFF",
+    width: '80%',
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 16,
   },
   modalHeader: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 16,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#000000",
+    fontWeight: '600',
+    color: '#000000',
   },
   deleteButton: {
-    backgroundColor: "#FF4444",
+    backgroundColor: '#FF4444',
     padding: 12,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   deleteButtonText: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   fullscreenContainer: {
     flex: 1,
@@ -532,8 +503,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   fullscreenImage: {
-    width: width,
-    height: height,
+    width,
+    height,
     resizeMode: 'contain',
   },
   closeButton: {

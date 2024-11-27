@@ -1,31 +1,31 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Animated, Dimensions, Image, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Animated, Dimensions, Image, Easing } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const { width, height } = Dimensions.get('window');
 const ORBIT_RADIUS = width * 0.45;
-const LOGO_SIZE = width * 0.14; 
-const MAIN_LOGO_SIZE = width * 1.4; 
+const LOGO_SIZE = width * 0.14;
+const MAIN_LOGO_SIZE = width * 1.4;
 
 // Fixed positions for partner logos in straight lines
 const PARTNER_POSITIONS = [
   // Top line (5 logos)
-  { angle: 90, distance: ORBIT_RADIUS * 0.7 },  
-  { angle: 90, distance: ORBIT_RADIUS * 0.7 },  
-  { angle: 90, distance: ORBIT_RADIUS * 0.7 },  
-  { angle: 90, distance: ORBIT_RADIUS * 0.7 },  
-  { angle: 90, distance: ORBIT_RADIUS * 0.7 },  
-  
+  { angle: 90, distance: ORBIT_RADIUS * 0.7 },
+  { angle: 90, distance: ORBIT_RADIUS * 0.7 },
+  { angle: 90, distance: ORBIT_RADIUS * 0.7 },
+  { angle: 90, distance: ORBIT_RADIUS * 0.7 },
+  { angle: 90, distance: ORBIT_RADIUS * 0.7 },
+
   // Bottom line (5 logos)
-  { angle: 270, distance: ORBIT_RADIUS * 0.7 }, 
-  { angle: 270, distance: ORBIT_RADIUS * 0.7 }, 
-  { angle: 270, distance: ORBIT_RADIUS * 0.7 }, 
-  { angle: 270, distance: ORBIT_RADIUS * 0.7 }, 
-  { angle: 270, distance: ORBIT_RADIUS * 0.7 }, 
+  { angle: 270, distance: ORBIT_RADIUS * 0.7 },
+  { angle: 270, distance: ORBIT_RADIUS * 0.7 },
+  { angle: 270, distance: ORBIT_RADIUS * 0.7 },
+  { angle: 270, distance: ORBIT_RADIUS * 0.7 },
+  { angle: 270, distance: ORBIT_RADIUS * 0.7 },
 ];
 
 // Partner logos with fixed positions
@@ -87,9 +87,7 @@ const styles = StyleSheet.create({
     height: MAIN_LOGO_SIZE * 1.2,
     alignSelf: 'center',
     top: '26%',
-    transform: [
-      { translateY: -MAIN_LOGO_SIZE * 0.25 }
-    ],
+    transform: [{ translateY: -MAIN_LOGO_SIZE * 0.25 }],
   },
   partnerLogoContainer: {
     position: 'absolute',
@@ -114,13 +112,18 @@ const styles = StyleSheet.create({
   },
 });
 
-const getPartnerLogoPosition = (angle: number, distance: number, index: number, total: number = 5) => {
+const getPartnerLogoPosition = (
+  angle: number,
+  distance: number,
+  index: number,
+  total: number = 5,
+) => {
   const spacing = width * 0.16;
   const lineWidth = spacing * (total - 1);
   const startX = -lineWidth / 2;
-  
+
   const x = startX + (index % total) * spacing;
-  const y = angle === 90 ? -height * 0.21 : height * 0.23; 
+  const y = angle === 90 ? -height * 0.21 : height * 0.23;
 
   return { x, y };
 };
@@ -164,7 +167,12 @@ const CustomSplashScreen = ({ onAnimationComplete }: SplashScreenProps) => {
     const bottomPartners = partnerScales.slice(5);
     bottomPartners.reverse().forEach((scale, index) => {
       Animated.sequence([
-        Animated.delay(partnerAnimationStart + (topPartners.length * partnerDelay) + bottomPartnerDelay + (index * partnerDelay)),
+        Animated.delay(
+          partnerAnimationStart +
+            topPartners.length * partnerDelay +
+            bottomPartnerDelay +
+            index * partnerDelay,
+        ),
         Animated.spring(scale, {
           toValue: 1,
           friction: 6,
@@ -174,10 +182,11 @@ const CustomSplashScreen = ({ onAnimationComplete }: SplashScreenProps) => {
       ]).start();
     });
 
-    const totalDuration = mainAnimationDuration +
-      (topPartners.length * partnerDelay) +
+    const totalDuration =
+      mainAnimationDuration +
+      topPartners.length * partnerDelay +
       bottomPartnerDelay +
-      (bottomPartners.length * partnerDelay) +
+      bottomPartners.length * partnerDelay +
       1000;
 
     setTimeout(async () => {
@@ -202,7 +211,7 @@ const CustomSplashScreen = ({ onAnimationComplete }: SplashScreenProps) => {
           useNativeDriver: false,
           easing: Easing.bezier(0.4, 0, 0.2, 1),
         }),
-      ])
+      ]),
     ).start();
   }, []);
 
@@ -212,8 +221,7 @@ const CustomSplashScreen = ({ onAnimationComplete }: SplashScreenProps) => {
         colors={['#00847F', '#005752']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1.1, y: 1.8 }}
-        style={styles.gradient}
-      >
+        style={styles.gradient}>
         {partnerLogos.map((logo, index) => {
           const position = getPartnerLogoPosition(logo.angle, logo.distance, index);
           return (
@@ -229,14 +237,9 @@ const CustomSplashScreen = ({ onAnimationComplete }: SplashScreenProps) => {
                   ],
                   opacity: partnerScales[index],
                 },
-              ]}
-            >
+              ]}>
               <View style={styles.partnerLogoBackground}>
-                <Image
-                  source={logo.source}
-                  style={styles.partnerLogo}
-                  resizeMode="contain"
-                />
+                <Image source={logo.source} style={styles.partnerLogo} resizeMode="contain" />
               </View>
             </Animated.View>
           );

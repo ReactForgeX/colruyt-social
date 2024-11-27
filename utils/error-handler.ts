@@ -14,7 +14,7 @@ export function handleError(error: any, fallback: string = 'Service is temporari
     message = 'Service is currently unavailable. Please try again later.';
   } else if (error instanceof Error) {
     // Use the error message if it's meaningful
-    message = error.message.includes('fetch failed') 
+    message = error.message.includes('fetch failed')
       ? 'Network error. Please check your connection.'
       : error.message;
   }

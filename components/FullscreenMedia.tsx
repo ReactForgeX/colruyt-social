@@ -1,3 +1,5 @@
+import { Video, ResizeMode } from 'expo-av';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import {
   Modal,
@@ -8,10 +10,9 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
-import { Video, ResizeMode } from 'expo-av';
-import * as ScreenOrientation from 'expo-screen-orientation';
 
 import { ThemedText } from './ThemedText';
+
 import { Images } from '@/constants/Images';
 import { Videos } from '@/constants/Videos';
 
@@ -40,24 +41,21 @@ export function FullscreenMedia({ isVisible, onClose, type, source }: Fullscreen
   }, [isVisible, type]);
 
   const { width, height } = Dimensions.get('window');
-  const mediaStyle = orientation === 'LANDSCAPE'
-    ? { width: width, height: height }
-    : { width: width, height: height * 0.8 };
+  const mediaStyle =
+    orientation === 'LANDSCAPE' ? { width, height } : { width, height: height * 0.8 };
 
   return (
     <Modal
       visible={isVisible}
-      transparent={true}
+      transparent
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent
-    >
+      statusBarTranslucent>
       <StatusBar hidden={orientation === 'LANDSCAPE'} />
       <View style={styles.container}>
         <TouchableOpacity
           style={[styles.closeButton, orientation === 'LANDSCAPE' && styles.closeButtonLandscape]}
-          onPress={onClose}
-        >
+          onPress={onClose}>
           <ThemedText style={styles.closeButtonText}>✕</ThemedText>
         </TouchableOpacity>
 

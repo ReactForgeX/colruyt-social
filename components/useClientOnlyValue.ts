@@ -5,5 +5,5 @@ export function useClientOnlyValue<T>(web: T, native: T): T {
     web,
     native,
     default: native,
-  }) as T;
+  });
 }

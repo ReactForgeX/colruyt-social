@@ -1,6 +1,7 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { ThemedText } from './ThemedText';
 
 type CreatePostHeaderProps = {
@@ -12,18 +13,11 @@ type CreatePostHeaderProps = {
 const CreatePostHeader = ({ onCancel, onPost, isPostDisabled }: CreatePostHeaderProps) => {
   return (
     <LinearGradient
-      colors={[
-        '#001F2D',
-        '#003D4D',
-        '#00435C',
-        '#007B8C',
-        '#00AB9E',
-      ]}
+      colors={['#001F2D', '#003D4D', '#00435C', '#007B8C', '#00AB9E']}
       locations={[0, 0.25, 0.5, 0.75, 1]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={styles.gradient}
-    >
+      style={styles.gradient}>
       <View style={styles.content}>
         <TouchableOpacity onPress={onCancel}>
           <ThemedText style={styles.cancelButton}>Cancel</ThemedText>
@@ -32,14 +26,13 @@ const CreatePostHeader = ({ onCancel, onPost, isPostDisabled }: CreatePostHeader
         <TouchableOpacity
           onPress={onPost}
           disabled={isPostDisabled}
-          style={[styles.postButton, isPostDisabled && styles.postButtonDisabled]}
-        >
+          style={[styles.postButton, isPostDisabled && styles.postButtonDisabled]}>
           <ThemedText style={styles.postButtonText}>Post</ThemedText>
         </TouchableOpacity>
       </View>
     </LinearGradient>
   );
-}
+};
 
 const styles = StyleSheet.create({
   gradient: {
