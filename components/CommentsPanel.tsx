@@ -1,6 +1,7 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+
 import { ThemedText } from './ThemedText';
 import { ThemedView } from './ThemedView';
 
@@ -30,7 +31,7 @@ export const CommentsPanel = ({ isVisible, onClose, comments }: CommentsPanelPro
       </View>
 
       <ScrollView style={styles.commentsList}>
-        {comments.map((comment) => (
+        {comments.map(comment => (
           <View key={comment.id} style={styles.commentItem}>
             <View style={styles.commentHeader}>
               <ThemedText style={styles.username}>{comment.username}</ThemedText>

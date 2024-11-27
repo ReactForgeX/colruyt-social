@@ -1,8 +1,9 @@
+import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+
 import { ThemedText } from './ThemedText';
 
 type GradientHeaderProps = {
@@ -12,11 +13,11 @@ type GradientHeaderProps = {
   showBackButton?: boolean;
 };
 
-export default function GradientHeader({ 
-  title, 
+export default function GradientHeader({
+  title,
   height = 56,
   showSettingsButton = true,
-  showBackButton = false
+  showBackButton = false,
 }: GradientHeaderProps) {
   const router = useRouter();
 
@@ -30,35 +31,24 @@ export default function GradientHeader({
 
   return (
     <LinearGradient
-      colors={[
-        '#001F2D',
-        '#003D4D',
-        '#00435C',
-        '#007B8C',
-        '#00AB9E',
-      ]}
+      colors={['#001F2D', '#003D4D', '#00435C', '#007B8C', '#00AB9E']}
       locations={[0, 0.25, 0.5, 0.75, 1]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.gradient, { height }]}
-    >
+      style={[styles.gradient, { height }]}>
       <View style={styles.content}>
         <View style={styles.leftContainer}>
           {showBackButton && (
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={handleBackPress}
-            >
+            <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
               <MaterialIcons name="arrow-back" size={28} color="#fff" />
             </TouchableOpacity>
           )}
-          <ThemedText style={[styles.title, showBackButton && styles.titleWithBack]}>{title}</ThemedText>
+          <ThemedText style={[styles.title, showBackButton && styles.titleWithBack]}>
+            {title}
+          </ThemedText>
         </View>
         {showSettingsButton && (
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={handleSettingsPress}
-          >
+          <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
             <MaterialIcons name="settings" size={28} color="#fff" />
           </TouchableOpacity>
         )}

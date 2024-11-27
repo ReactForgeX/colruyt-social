@@ -1,5 +1,6 @@
-import OpenAI from 'openai';
 import { EXPO_PUBLIC_OPENAI_API_KEY } from '@env';
+import OpenAI from 'openai';
+
 import { handleError } from './error-handler';
 
 const openai = new OpenAI({
@@ -11,16 +12,17 @@ const openai = new OpenAI({
 export async function enhanceText(text: string): Promise<string> {
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: 'gpt-3.5-turbo',
       messages: [
         {
-          role: "system",
-          content: "You are a helpful assistant that improves text to be more professional, engaging, and well-structured. Keep the same meaning but make it better."
+          role: 'system',
+          content:
+            'You are a helpful assistant that improves text to be more professional, engaging, and well-structured. Keep the same meaning but make it better.',
         },
         {
-          role: "user",
-          content: text
-        }
+          role: 'user',
+          content: text,
+        },
       ],
       temperature: 0.7,
       max_tokens: 200,

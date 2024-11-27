@@ -1,31 +1,24 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, StyleSheet, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
 
+import GradientHeader from '@/components/GradientHeader';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import GradientHeader from '@/components/GradientHeader';
-import { Colors } from '@/constants/Colors';
 import { Avatars } from '@/constants/Avatars';
+import { Colors } from '@/constants/Colors';
 
 const COLRUYT_TEAL = Colors.light.tint;
 
 export default function MeScreen() {
-
   return (
     <SafeAreaView edges={['top']} style={styles.container}>
-      <GradientHeader 
-        title="Profile" 
-        showSettingsButton
-      />
+      <GradientHeader title="Profile" showSettingsButton />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {/* Profile Section */}
         <ThemedView style={styles.profileSection}>
-          <Image 
-            source={Avatars.default}
-            style={styles.profileImage}
-          />
+          <Image source={Avatars.default} style={styles.profileImage} />
           <View style={styles.profileInfo}>
             <ThemedText style={styles.name}>John Doe</ThemedText>
             <ThemedText style={styles.role}>Senior Software Engineer</ThemedText>
@@ -44,7 +37,8 @@ export default function MeScreen() {
           </View>
           <View style={styles.sectionContent}>
             <ThemedText style={styles.aboutDescription}>
-              Passionate software engineer focused on building innovative solutions for Colruyt Group's digital transformation.
+              Passionate software engineer focused on building innovative solutions for Colruyt
+              Group's digital transformation.
             </ThemedText>
           </View>
         </ThemedView>
@@ -264,7 +258,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     flex: 1,
   },
-  
+
   awardDate: {
     fontSize: 14,
     color: Colors.light.icon,

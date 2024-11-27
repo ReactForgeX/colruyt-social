@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Modal,
   TouchableOpacity,
@@ -7,9 +7,10 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import { ThemedText } from "./ThemedText";
-import { ThemedView } from "./ThemedView";
+} from 'react-native';
+
+import { ThemedText } from './ThemedText';
+import { ThemedView } from './ThemedView';
 
 interface CreatePostModalProps {
   isVisible: boolean;
@@ -17,32 +18,22 @@ interface CreatePostModalProps {
   onPost: (content: string) => void;
 }
 
-export function CreatePostModal({
-  isVisible,
-  onClose,
-  onPost,
-}: CreatePostModalProps) {
-  const [content, setContent] = useState("");
+export function CreatePostModal({ isVisible, onClose, onPost }: CreatePostModalProps) {
+  const [content, setContent] = useState('');
 
   const handlePost = () => {
     if (content.trim()) {
       onPost(content);
-      setContent("");
+      setContent('');
       onClose();
     }
   };
 
   return (
-    <Modal
-      visible={isVisible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={isVisible} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}>
         <View style={styles.overlay}>
           <ThemedView style={styles.content}>
             <View style={styles.header}>
@@ -66,13 +57,9 @@ export function CreatePostModal({
 
             <View style={styles.footer}>
               <TouchableOpacity
-                style={[
-                  styles.postButton,
-                  !content.trim() && styles.postButtonDisabled,
-                ]}
+                style={[styles.postButton, !content.trim() && styles.postButtonDisabled]}
                 onPress={handlePost}
-                disabled={!content.trim()}
-              >
+                disabled={!content.trim()}>
                 <ThemedText style={styles.postButtonText}>Post</ThemedText>
               </TouchableOpacity>
             </View>
@@ -89,8 +76,8 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   content: {
     borderTopLeftRadius: 20,
@@ -99,9 +86,9 @@ const styles = StyleSheet.create({
     minHeight: 300,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 20,
   },
   closeButton: {
@@ -112,16 +99,16 @@ const styles = StyleSheet.create({
     height: 150,
     padding: 12,
     borderRadius: 8,
-    backgroundColor: "#f1f1f1",
+    backgroundColor: '#f1f1f1',
     fontSize: 16,
     marginBottom: 20,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   footer: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
   },
   postButton: {
-    backgroundColor: "#00ab9e",
+    backgroundColor: '#00ab9e',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -130,8 +117,8 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   postButtonText: {
-    color: "white",
-    fontWeight: "bold",
+    color: 'white',
+    fontWeight: 'bold',
     fontSize: 16,
   },
 });
