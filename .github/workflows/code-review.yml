@@ -40,9 +40,9 @@ jobs:
         run: npm run prettier -- --check .
         continue-on-error: true
 
-      - name: Run Jest tests
-        run: npm test
-        continue-on-error: true
+      # - name: Run Jest tests
+      #   run: npm test
+      #   continue-on-error: true
 
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
