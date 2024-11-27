@@ -9,6 +9,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Animated,
 } from "react-native";
 import { Video } from 'expo-av';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -71,8 +72,41 @@ const SocialPost = ({
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [likedComments, setLikedComments] = useState<{ [key: string]: boolean }>({});
+  const [isLiked, setIsLiked] = useState(false);
   const colorScheme = useColorScheme();
   const videoRef = useRef<Video>(null);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const opacityAnim = useRef(new Animated.Value(1)).current;
+
+  const animateHeart = () => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(scaleAnim, {
+          toValue: 1.2,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 0.6,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          friction: 3,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  };
 
   const handleLikeComment = (commentId: string) => {
     setLikedComments(prev => ({ ...prev, [commentId]: !prev[commentId] }));
@@ -84,6 +118,11 @@ const SocialPost = ({
       onAddComment?.(newComment.trim());
       setNewComment('');
     }
+  };
+
+  const handleLikePost = () => {
+    setIsLiked(!isLiked);
+    animateHeart();
   };
 
   const currentMedia = media?.[currentMediaIndex];
@@ -106,6 +145,10 @@ const SocialPost = ({
 
   const confirmDelete = () => {
     onDelete?.();
+    setShowDeleteConfirm(false);
+  };
+
+  const cancelDelete = () => {
     setShowDeleteConfirm(false);
   };
 
@@ -250,10 +293,20 @@ const SocialPost = ({
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.footerButton}
+          onPress={handleLikePost}
         >
           <View style={styles.interactionContainer}>
-            <MaterialIcons name="favorite-border" size={24} color="#FF4081" />
-            <ThemedText style={styles.interactionText}>{likes}</ThemedText>
+            <Animated.View style={{
+              transform: [{ scale: scaleAnim }],
+              opacity: opacityAnim,
+            }}>
+              <MaterialIcons 
+                name={isLiked ? "favorite" : "favorite-border"} 
+                size={24} 
+                color={"#FF4081"} 
+              />
+            </Animated.View>
+            <ThemedText style={styles.interactionText}>{isLiked ? likes + 1 : likes}</ThemedText>
           </View>
         </TouchableOpacity>
         <TouchableOpacity 
@@ -361,25 +414,38 @@ const SocialPost = ({
 
       <Modal
         visible={showDeleteConfirm}
-        transparent
+        transparent={true}
         animationType="fade"
-        onRequestClose={() => setShowDeleteConfirm(false)}
+        onRequestClose={cancelDelete}
       >
-        <View style={styles.modalOverlay}>
-          <ThemedView style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <ThemedText style={styles.modalTitle}>Delete Post?</ThemedText>
-            </View>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={confirmDelete}
-            >
-              <ThemedText style={styles.deleteButtonText}>
-                Delete
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={cancelDelete}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalDialog}>
+              <ThemedText style={styles.modalTitle}>Delete Post</ThemedText>
+              <ThemedText style={styles.modalMessage}>
+                Are you sure you want to delete this post?
               </ThemedText>
-            </TouchableOpacity>
-          </ThemedView>
-        </View>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={cancelDelete}
+                >
+                  <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.deleteButton]}
+                  onPress={confirmDelete}
+                >
+                  <ThemedText style={styles.deleteButtonText}>Delete</ThemedText>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
       </Modal>
     </ThemedView>
   );
@@ -495,35 +561,65 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContent: {
-    width: "80%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    padding: 16,
+    width: '80%',
+    maxWidth: 300,
   },
-  modalHeader: {
-    alignItems: "center",
-    marginBottom: 16,
+  modalDialog: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#000000",
+    fontWeight: '600',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#666',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginHorizontal: 5,
+  },
+  cancelButton: {
+    backgroundColor: '#F5F5F5',
   },
   deleteButton: {
-    backgroundColor: "#FF4444",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
+    backgroundColor: '#FF4081',
+  },
+  cancelButtonText: {
+    textAlign: 'center',
+    color: '#666',
+    fontWeight: '600',
   },
   deleteButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
+    textAlign: 'center',
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   fullscreenContainer: {
     flex: 1,

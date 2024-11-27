@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import GradientHeader from "@/components/GradientHeader";
 import { Images } from "@/constants/Images";
@@ -125,8 +126,11 @@ const recentPolicyChanges: PolicyChange[] = [
 
 const hotBlogPosts = blogPosts.slice(0, 5);
 
+export { blogPosts };
+
 export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   const filteredContent = {
     blogs: searchQuery ? blogPosts.filter(post => 
@@ -142,7 +146,17 @@ export default function SearchScreen() {
   };
 
   const renderBlogPost = (post: BlogPost) => (
-    <TouchableOpacity key={post.id} style={styles.card}>
+    <TouchableOpacity 
+      key={post.id} 
+      style={styles.card}
+      onPress={() => {
+        console.log('Navigating to article:', post.id);
+        router.push({
+          pathname: '/article-detail',
+          params: { id: post.id }
+        });
+      }}
+    >
       <View style={styles.cardContent}>
         <View style={styles.postMeta}>
           <ThemedText style={styles.category}>{post.category}</ThemedText>
